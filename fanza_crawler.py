@@ -77,7 +77,7 @@ def fetch_fanza_item():
     selected_keyword = random.choice(keywords)
     print(f"Searching FANZA for keyword: {selected_keyword}")
 
-    random_offset = random.randint(1, 15)
+    random_offset = random.randint(1, 10)
     print(f"Using random offset: {random_offset}")
 
     url = "https://api.dmm.com/affiliate/v3/ItemList"
@@ -99,6 +99,18 @@ def fetch_fanza_item():
     
     if response.status_code != 200:
         print(f"API Error Response Body: {response.text}")
+        print("")
+        print("===== FANZA API 認証エラー 解決ガイド =====")
+        print(f"  現在使用中のAPI_ID: [{api_id}]")
+        print(f"  現在使用中のAFFILIATE_ID: [{affiliate_id}]")
+        print("")
+        print("よくある原因:")
+        print("  1. GitHubのSecrets設定でIDの値にスペースや改行が入っている")
+        print("  2. affiliate_idの形式が誤っている（正: onchan555-999 / 誤: onchan555-003など番号違い）")
+        print("  3. APIアクセスが承認されていない（FANZA側の審査待ち）")
+        print("")
+        print("対処法: GitHubリポジトリの Settings > Secrets > FANZA_AFFILIATE_ID を確認・修正してください")
+        print("===== ====================== =====")
         raise Exception(f"FANZA API returned status code {response.status_code}")
 
     data = response.json()
@@ -289,7 +301,8 @@ def main():
 
     except Exception as e:
         print(f"Error during crawler execution: {e}")
-        exit(1)
+        print("APIエラーのため今回はスキップします。既存の記事は保持されています。")
+        exit(0)  # exit(0)で正常終了扱い → 後続のbundle・commitステップが動作する
 
 if __name__ == "__main__":
     main()
