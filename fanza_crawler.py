@@ -40,9 +40,11 @@ def save_to_cache(content_id):
     with open(CACHE_FILE, "a", encoding="utf-8") as f:
         f.write(f"{content_id}\n")
 
+LINK_AFFILIATE_ID = "onchan555-003"  # 記事内アフィリリンク用（固定）
+
 def fetch_fanza_item():
     api_id = os.environ.get("FANZA_API_ID")
-    affiliate_id = os.environ.get("FANZA_AFFILIATE_ID")
+    affiliate_id = os.environ.get("FANZA_AFFILIATE_ID")  # API呼び出し用（-999）
     if not api_id or not affiliate_id:
         raise ValueError("FANZA_API_ID and FANZA_AFFILIATE_ID must be set in environment variables.")
 
@@ -151,7 +153,8 @@ def fetch_fanza_item():
         print("All fetched items were either already posted or contained prohibited keywords.")
         return None, affiliate_id
 
-    return selected_item, affiliate_id
+    # API用(999)ではなくリンク用(003)を記事生成に渡す
+    return selected_item, LINK_AFFILIATE_ID
 
 def build_ultra_seo_article(item, link_affiliate_id):
     title = item.get("title", "")
