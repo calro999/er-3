@@ -5,7 +5,7 @@ import path from 'path';
 export const dynamic = 'force-static';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://er-2.pages.dev';
+  const baseUrl = 'https://er-3.pages.dev';
 
   const routes: MetadataRoute.Sitemap = [
     {

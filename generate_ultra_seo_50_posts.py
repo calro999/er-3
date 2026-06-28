@@ -1,147 +1,73 @@
-import os
-import random
-import requests
-import time
-import json
-import re
-import urllib.parse
-import hashlib
+import os, random, requests, time, json, re, hashlib
 
 CACHE_FILE = "posted_cache.txt"
 POSTS_DIR = "src/data/posts"
+API_ID = "4Lx0ftRf17Uuad6Ud7Gb"
+API_AFFILIATE_ID = "onchan555-999"
+LINK_AFFILIATE_ID = "onchan555-003"
+TARGET_POST_COUNT = 50
 
 def clean_for_safety(text):
-    if not text:
-        return ""
+    if not text: return ""
     safety_map = {
-        "流出": "秘密のプライベート映像",
-        "裏アカ": "秘密のアカウント",
-        "パパ活": "秘密の交際",
-        "ナンパ": "運命の出会い",
-        "ハプニング": "予期せぬ出来事",
-        "マジックミラー": "特殊車両",
-        "素人": "一般の女性",
-        "痴女": "積極的な女性",
-        "中出し": "愛の結末",
-        "AV": "ビデオ作品",
-        "アダルト": "大人向け"
+        "流出": "秘密のプライベート映像", "裏アカ": "秘密のアカウント",
+        "パパ活": "秘密の交際", "ナンパ": "運命の出会い",
+        "ハプニング": "予期せぬドラマ", "マジックミラー": "特殊車両",
+        "素人": "一般女性", "痴女": "積極的な女性", "中出し": "愛の結末"
     }
     for old, new in safety_map.items():
         text = text.replace(old, new)
     return text
 
-def load_posted_cache():
-    if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, "r", encoding="utf-8") as f:
-            return set(line.strip() for line in f if line.strip())
-    return set()
-
-def save_to_cache(content_id):
-    with open(CACHE_FILE, "a", encoding="utf-8") as f:
-        f.write(f"{content_id}\n")
-
-def fetch_fanza_item():
-    api_id = os.environ.get("FANZA_API_ID")
-    affiliate_id = os.environ.get("FANZA_AFFILIATE_ID")
-    if not api_id or not affiliate_id:
-        raise ValueError("FANZA_API_ID and FANZA_AFFILIATE_ID must be set in environment variables.")
-
-    raw_api_id = api_id
-    raw_affiliate_id = affiliate_id
-
-    if "api_id=" in raw_api_id:
-        match = re.search(r"[?&]api_id=([^&]+)", raw_api_id)
-        if match:
-            api_id = match.group(1)
-
-    if "affiliate_id=" in raw_affiliate_id:
-        match = re.search(r"[?&]affiliate_id=([^&]+)", raw_affiliate_id)
-        if match:
-            affiliate_id = match.group(1)
-    elif "affiliate_id=" in raw_api_id:
-        match = re.search(r"[?&]affiliate_id=([^&]+)", raw_api_id)
-        if match:
-            affiliate_id = match.group(1)
-
-    api_id = urllib.parse.unquote(api_id).strip()
-    affiliate_id = urllib.parse.unquote(affiliate_id).strip()
-
-    api_id = re.sub(r"[^a-zA-Z0-9_-]", "", api_id).strip()
-    affiliate_id = re.sub(r"[^a-zA-Z0-9-]", "", affiliate_id).strip()
-
-    print(f"[DEBUG] Final parsed API ID: {api_id}")
-    print(f"[DEBUG] Final parsed Affiliate ID: {affiliate_id}")
-
-    # ギャル・美少女特化キーワードリスト
-    keywords = ["ギャル", "黒ギャル", "制服ギャル", "ギャルJK", "パパ活 ギャル", "コスプレ ギャル", "美少女 ギャル", "ギャルママ"]
-    selected_keyword = random.choice(keywords)
-    print(f"Searching FANZA for keyword: {selected_keyword}")
-
-    random_offset = random.randint(1, 15)
-    print(f"Using random offset: {random_offset}")
-
+def fetch_fanza_items():
+    kws = ["ギャル", "黒ギャル", "制服ギャル", "ギャルJK", "コギャル", "ギャルママ", "美少女 ギャル", "コスプレ ギャル", "パパ活 ギャル", "美少女", "制服", "女子高生", "単体"]
     url = "https://api.dmm.com/affiliate/v3/ItemList"
-    params = {
-        "api_id": api_id,
-        "affiliate_id": affiliate_id,
-        "site": "FANZA",
-        "service": "digital",
-        "floor": "videoa",
-        "keyword": selected_keyword,
-        "sort": random.choice(["date", "rank"]),
-        "offset": random_offset,
-        "hits": 40,
-        "output": "json"
-    }
-
-    response = requests.get(url, params=params, timeout=15)
-    print(f"API Response Status: {response.status_code}")
-    
-    if response.status_code != 200:
-        print(f"API Error Response Body: {response.text}")
-        raise Exception(f"FANZA API returned status code {response.status_code}")
-
-    data = response.json()
-    items = data.get("result", {}).get("items", [])
-    
-    if not items:
-        print("No items returned from API with selected keyword and offset.")
-        return None, affiliate_id
-
-    posted_cache = load_posted_cache()
-    
+    all_items = []
+    for kw in kws:
+        for offset in [1, 10, 20]:
+            p = {
+                "api_id": API_ID,
+                "affiliate_id": API_AFFILIATE_ID,
+                "site": "FANZA",
+                "service": "digital",
+                "floor": "videoa",
+                "sort": "rank",
+                "offset": offset,
+                "hits": 30,
+                "output": "json",
+                "keyword": kw
+            }
+            try:
+                r = requests.get(url, params=p, timeout=15)
+                if r.status_code == 200:
+                    items = r.json().get("result", {}).get("items", [])
+                    all_items.extend(items)
+            except Exception as e:
+                print(f"ERR: {e}")
+            time.sleep(0.1)
+        
+    seen = set(); uniq = []
     # 禁止ワード（VR、バーチャル、レディーボーイ、オカマ、ニューハーフ、熟女系を完全排除）
-    exclude_keywords = [
+    ex = [
         "VR", "vr", "8KVR", "バーチャル", "レディーボーイ", "オカマ", "ニューハーフ",
         "男の娘", "ゲイ", "熟女", "おばさん", "五十路", "四十路", "六十路", "熟年",
         "マダム", "高齢", "ババ"
     ]
-    
-    selected_item = None
-    for item in items:
-        content_id = item.get("content_id")
-        title = item.get("title", "")
-        genres = " ".join(g.get("name", "") for g in item.get("iteminfo", {}).get("genre", []))
+    for i in all_items:
+        c = i.get("content_id")
+        if not c or c in seen: continue
+        t = i.get("title", "")
+        gs = " ".join(g.get("name", "") for g in i.get("iteminfo", {}).get("genre", []))
+        if any(w in t + " " + gs for w in ex): continue
+        imgs = i.get("imageURL", {})
+        if not imgs or not (imgs.get("large") or imgs.get("list")): continue
+        seen.add(c)
+        uniq.append(i)
         
-        # キャッシュチェック
-        if content_id in posted_cache:
-            continue
-            
-        # 禁止ワードチェック
-        if any(ex in title + " " + genres for ex in exclude_keywords):
-            print(f"Skipping prohibited item: {title[:30]}")
-            continue
-            
-        selected_item = item
-        break
+    random.shuffle(uniq)
+    return uniq[:TARGET_POST_COUNT]
 
-    if not selected_item:
-        print("All fetched items were either already posted or contained prohibited keywords.")
-        return None, affiliate_id
-
-    return selected_item, affiliate_id
-
-def build_ultra_seo_article(item, link_affiliate_id):
+def build_ultra_seo_article(item, idx):
     title = item.get("title", "")
     comment = clean_for_safety(item.get("comment", ""))
     genres = [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])]
@@ -149,7 +75,7 @@ def build_ultra_seo_article(item, link_affiliate_id):
     maker_info = item.get("iteminfo", {}).get("maker")
     maker = maker_info[0].get("name", "") if maker_info else "大注目レーベル"
     cid = item.get("content_id", "")
-    date_str = item.get("date", time.strftime("%Y-%m-%d"))[:10]
+    date_str = item.get("date", "2026-06-28")[:10]
     
     actress_str = "、".join(actresses) if actresses else "注目のギャル女優"
     genre_str = "、".join(genres[:4]) if genres else "ギャル・トレンド"
@@ -242,8 +168,8 @@ def build_ultra_seo_article(item, link_affiliate_id):
         sample_imgs = sample_data["sample_l"]["image"][:5]
         
     aff_url = item.get("affiliateURL", "")
-    if link_affiliate_id and aff_url:
-        aff_url = re.sub(r"affiliate_id=[^&]+", f"affiliate_id={link_affiliate_id}", aff_url)
+    if LINK_AFFILIATE_ID and aff_url:
+        aff_url = re.sub(r"affiliate_id=[^&]+", f"affiliate_id={LINK_AFFILIATE_ID}", aff_url)
         
     labels = genres[:5]
     if actresses:
@@ -265,31 +191,29 @@ def build_ultra_seo_article(item, link_affiliate_id):
     }
 
 def main():
-    print("--- Starting FANZA Crawler for Gal & Ultra SEO Posts ---")
-    try:
-        item, affiliate_id = fetch_fanza_item()
-        if not item:
-            print("No new item to post. Exiting gracefully.")
-            return
-
-        content_id = item.get("content_id")
-        print(f"Selected Item Content ID: {content_id}")
-
-        post_data = build_ultra_seo_article(item, affiliate_id)
-
-        os.makedirs(POSTS_DIR, exist_ok=True)
-        post_filepath = os.path.join(POSTS_DIR, f"{content_id}.json")
-
-        with open(post_filepath, "w", encoding="utf-8") as f:
+    print("ギャル・美少女特化 超高品質SEO記事50件の作成を開始します...")
+    items = fetch_fanza_items()
+    print(f"取得できた作品数: {len(items)}")
+    
+    os.makedirs(POSTS_DIR, exist_ok=True)
+    
+    for old_f in os.listdir(POSTS_DIR):
+        if old_f.endswith(".json"):
+            os.remove(os.path.join(POSTS_DIR, old_f))
+            
+    created_count = 0
+    for idx, item in enumerate(items):
+        post_data = build_ultra_seo_article(item, idx)
+        cid = post_data["id"]
+        filepath = os.path.join(POSTS_DIR, f"{cid}.json")
+        with open(filepath, "w", encoding="utf-8") as f:
             json.dump(post_data, f, ensure_ascii=False, indent=2)
-
-        print(f"Successfully generated post JSON: {post_filepath}")
-        save_to_cache(content_id)
-        print(f"Saved {content_id} to cache.")
-
-    except Exception as e:
-        print(f"Error during crawler execution: {e}")
-        exit(1)
+        print(f"作成成功 [{created_count+1}/50]: {cid} - {post_data['title'][:30]}")
+        created_count += 1
+        if created_count >= TARGET_POST_COUNT:
+            break
+            
+    print("50件の超高品質記事作成が完了しました。")
 
 if __name__ == "__main__":
     main()

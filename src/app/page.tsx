@@ -63,22 +63,22 @@ export default function Home() {
 
   return (
     <div className="space-y-8 md:space-y-12">
-      {/* ヒーローセクション - アダルト感を極限まで薄めたモダンで上品なマガジン風 */}
-      <section className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-800 to-slate-950 p-8 md:p-12 border border-slate-700/30 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-rose-500/[0.01] rounded-full filter blur-3xl pointer-events-none" />
+      {/* ヒーローセクション - モダンで上品な極上美女マガジン風 */}
+      <section className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900 via-rose-950 to-slate-950 p-8 md:p-12 border border-rose-900/20 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-rose-500/[0.03] rounded-full filter blur-3xl pointer-events-none" />
         
         <div className="relative max-w-xl space-y-4">
-          <span className="inline-flex text-[9px] font-bold tracking-widest text-rose-500 bg-rose-500/10 border border-rose-500/10 px-3 py-1 rounded">
-            CINEMATIC DRAMA ARCHIVE
+          <span className="inline-flex text-[9px] font-bold tracking-widest text-rose-400 bg-rose-500/10 border border-rose-500/20 px-3 py-1 rounded">
+            GAL & BEAUTY SELECTION
           </span>
           <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight leading-snug text-white">
-            大人のストーリーを追求する、<br />
-            <span className="bg-gradient-to-r from-slate-100 via-rose-200 to-slate-200 bg-clip-text text-transparent">
-              作品紹介と徹底考察
+            トレンドギャル＆美少女を追求する、<br />
+            <span className="bg-gradient-to-r from-rose-200 via-pink-300 to-white bg-clip-text text-transparent">
+              極上美女クロニクル
             </span>
           </h1>
           <p className="text-slate-300 leading-relaxed text-xs md:text-sm max-w-md">
-            感情のゆらぎや背徳的な心理描写を丁寧に紐解く、大人のための鑑賞支援サイト。厳選された作品の深いレビューをお届けします。
+            弾けるギャルマインドと圧倒的な美少女感を誇る名作を厳選。見どころや演出のリアルさを丁寧に解剖する、大人のための鑑賞支援アーカイブ。
           </p>
         </div>
 
@@ -176,7 +176,7 @@ export default function Home() {
               onClick={() => {
                 setSearchQuery("");
                 setSelectedGenre("すべて");
-                setSelectedActress("統括");
+                setSelectedActress("すべて");
                 setSelectedLabel("すべて");
               }}
               className="text-rose-600 font-bold hover:text-rose-500 cursor-pointer"
@@ -202,7 +202,7 @@ export default function Home() {
           {filteredPosts.map((post) => (
             <article
               key={post.id}
-              className="flex flex-col rounded-2xl overflow-hidden bg-white border border-slate-200/80 card-hover-effect shadow-sm"
+              className="flex flex-col rounded-2xl overflow-hidden bg-white border border-slate-200/80 card-hover-effect shadow-sm group"
             >
               {/* アイキャッチ画像 */}
               <div className="aspect-[16/10] relative overflow-hidden bg-slate-100 flex items-center justify-center border-b border-slate-200/60">
