@@ -5,6 +5,7 @@ POSTS_DIR = "src/data/posts"
 API_ID = "4Lx0ftRf17Uuad6Ud7Gb"
 API_AFFILIATE_ID = "onchan555-999"
 LINK_AFFILIATE_ID = "onchan555-003"
+TARGET_POST_COUNT = 40
 
 def clean_for_safety(text):
     if not text: return ""
@@ -18,7 +19,50 @@ def clean_for_safety(text):
         text = text.replace(old, new)
     return text
 
-def build_ultra_seo_article(item, idx=0):
+def fetch_fanza_items():
+    kws = ["コスプレ", "制服", "女子高生", "人気", "話題作", "美少女", "独占", "高画質", "人妻", "巨乳", "美脚", "ギャル", "単体", "痴女", "フェラ", "風俗"]
+    url = "https://api.dmm.com/affiliate/v3/ItemList"
+    all_items = []
+    for kw in kws:
+        for offset in [1, 10, 20]:
+            p = {
+                "api_id": API_ID,
+                "affiliate_id": API_AFFILIATE_ID,
+                "site": "FANZA",
+                "service": "digital",
+                "floor": "videoa",
+                "sort": "rank",
+                "offset": offset,
+                "hits": 30,
+                "output": "json",
+                "keyword": kw
+            }
+            try:
+                r = requests.get(url, params=p, timeout=15)
+                if r.status_code == 200:
+                    items = r.json().get("result", {}).get("items", [])
+                    all_items.extend(items)
+            except Exception as e:
+                print(f"ERR: {e}")
+            time.sleep(0.1)
+        
+    seen = set(); uniq = []
+    ex = ["熟女", "おばさん", "五十路", "四十路", "六十路", "熟年", "マダム", "高齢", "ババ", "ニューハーフ", "レディーボーイ", "男の娘", "ゲイ"]
+    for i in all_items:
+        c = i.get("content_id")
+        if not c or c in seen: continue
+        t = i.get("title", "")
+        gs = " ".join(g.get("name", "") for g in i.get("iteminfo", {}).get("genre", []))
+        if any(w in t + " " + gs for w in ex): continue
+        imgs = i.get("imageURL", {})
+        if not imgs or not (imgs.get("large") or imgs.get("list")): continue
+        seen.add(c)
+        uniq.append(i)
+        
+    random.shuffle(uniq)
+    return uniq[:TARGET_POST_COUNT]
+
+def build_ultra_seo_article(item, idx):
     title = item.get("title", "")
     comment = clean_for_safety(item.get("comment", ""))
     genres = [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])]
@@ -26,7 +70,7 @@ def build_ultra_seo_article(item, idx=0):
     maker_info = item.get("iteminfo", {}).get("maker")
     maker = maker_info[0].get("name", "") if maker_info else "大注目レーベル"
     cid = item.get("content_id", "")
-    date_str = item.get("date", time.strftime("%Y-%m-%d"))[:10]
+    date_str = item.get("date", "2026-06-28")[:10]
     
     actress_str = "、".join(actresses) if actresses else "注目の主演女優"
     genre_str = "、".join(genres[:4]) if genres else "人気ジャンル"
@@ -140,3 +184,31 @@ def build_ultra_seo_article(item, idx=0):
         "date": date_str,
         "labels": list(set(labels))
     }
+
+def main():
+    print("超高品質SEO特化記事40件の作成を開始します...")
+    items = fetch_fanza_items()
+    print(f"取得できた作品数: {len(items)}")
+    
+    os.makedirs(POSTS_DIR, exist_ok=True)
+    
+    for old_f in os.listdir(POSTS_DIR):
+        if old_f.endswith(".json"):
+            os.remove(os.path.join(POSTS_DIR, old_f))
+            
+    created_count = 0
+    for idx, item in enumerate(items):
+        post_data = build_ultra_seo_article(item, idx)
+        cid = post_data["id"]
+        filepath = os.path.join(POSTS_DIR, f"{cid}.json")
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(post_data, f, ensure_ascii=False, indent=2)
+        print(f"作成成功 [{created_count+1}/40]: {cid} - {post_data['title'][:30]}")
+        created_count += 1
+        if created_count >= TARGET_POST_COUNT:
+            break
+            
+    print("40件の超高品質記事作成が完了しました。")
+
+if __name__ == "__main__":
+    main()

@@ -5,6 +5,7 @@ POSTS_DIR = "src/data/posts"
 API_ID = "4Lx0ftRf17Uuad6Ud7Gb"
 API_AFFILIATE_ID = "onchan555-999"
 LINK_AFFILIATE_ID = "onchan555-003"
+TARGET_POST_COUNT = 20
 
 def clean_for_safety(text):
     if not text: return ""
@@ -18,7 +19,49 @@ def clean_for_safety(text):
         text = text.replace(old, new)
     return text
 
-def build_ultra_seo_article(item, idx=0):
+def fetch_fanza_items():
+    kws = ["コスプレ", "制服", "女子高生", "人気", "話題作", "美少女", "独占", "高画質", "人妻", "巨乳", "美脚", "ギャル", "単体"]
+    url = "https://api.dmm.com/affiliate/v3/ItemList"
+    all_items = []
+    for kw in kws:
+        p = {
+            "api_id": API_ID,
+            "affiliate_id": API_AFFILIATE_ID,
+            "site": "FANZA",
+            "service": "digital",
+            "floor": "videoa",
+            "sort": "rank",
+            "offset": random.randint(1, 8),
+            "hits": 30,
+            "output": "json",
+            "keyword": kw
+        }
+        try:
+            r = requests.get(url, params=p, timeout=15)
+            if r.status_code == 200:
+                items = r.json().get("result", {}).get("items", [])
+                all_items.extend(items)
+        except Exception as e:
+            print(f"ERR: {e}")
+        time.sleep(0.15)
+        
+    seen = set(); uniq = []
+    ex = ["熟女", "おばさん", "五十路", "四十路", "六十路", "熟年", "マダム", "高齢", "ババ", "ニューハーフ", "レディーボーイ", "男の娘", "ゲイ"]
+    for i in all_items:
+        c = i.get("content_id")
+        if not c or c in seen: continue
+        t = i.get("title", "")
+        gs = " ".join(g.get("name", "") for g in i.get("iteminfo", {}).get("genre", []))
+        if any(w in t + " " + gs for w in ex): continue
+        imgs = i.get("imageURL", {})
+        if not imgs or not (imgs.get("large") or imgs.get("list")): continue
+        seen.add(c)
+        uniq.append(i)
+        
+    random.shuffle(uniq)
+    return uniq[:TARGET_POST_COUNT]
+
+def build_ultra_seo_article(item, idx):
     title = item.get("title", "")
     comment = clean_for_safety(item.get("comment", ""))
     genres = [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])]
@@ -26,15 +69,17 @@ def build_ultra_seo_article(item, idx=0):
     maker_info = item.get("iteminfo", {}).get("maker")
     maker = maker_info[0].get("name", "") if maker_info else "大注目レーベル"
     cid = item.get("content_id", "")
-    date_str = item.get("date", time.strftime("%Y-%m-%d"))[:10]
+    date_str = item.get("date", "2026-06-28")[:10]
     
     actress_str = "、".join(actresses) if actresses else "注目の主演女優"
     genre_str = "、".join(genres[:4]) if genres else "人気ジャンル"
     
+    # ハッシュを用いた決定論的ランダム（一貫性を保ちつつ作品ごとに固有の視点・表現を抽出）
     h_num = int(hashlib.md5(cid.encode()).hexdigest(), 16)
     
     lines = []
     
+    # --- 1. インセンティブと惹きつけ（導入） ---
     intros = [
         f"<p>検索でこの記事に辿り着いたあなたへ。いま話題作として各種ランキングを賑わせている<strong>『{title}』</strong>（{maker}）。「実際の見どころは？」「自分の好みに合うか？」と気になっている方も多いのではないでしょうか。本記事では、ファン視点から本作の見どころ、演出のリアルさ、キャスト【{actress_str}】の魅力を余すところなく徹底解説します！</p>",
         f"<p>「間違いのない一本を選びたい」――そんな映像ファンの期待に100%応える傑作が登場しました。{maker}が放つ超話題作<strong>『{title}』</strong>です。主演の【{actress_str}】が見せる圧倒的な表現力と、{genre_str}の魅力を凝縮した本作。実際に視聴した上でのリアルな見どころと満足度をわかりやすく紐解いていきます。</p>",
@@ -42,8 +87,9 @@ def build_ultra_seo_article(item, idx=0):
     ]
     lines.append(intros[h_num % len(intros)])
     
+    # --- 2. 作品基本スペック表（Googleスニペット対策・構造化） ---
     lines.append("<h2 style='border-bottom: 2px solid #f43f5e; padding-bottom: 8px; margin-top: 28px;'>【基本データ】作品スペック＆詳細情報</h2>")
-    lines.append("<table style='width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px;'>")
+    lines.append("<table style='w-full; border-collapse: collapse; margin: 16px 0; font-size: 14px;'>")
     lines.append(f"<tr style='border-bottom: 1px solid #e2e8f0;'><th style='background: #f8fafc; padding: 10px; text-align: left; width: 30%; font-weight: bold; color: #475569;'>タイトル</th><td style='padding: 10px; color: #1e293b;'>{title}</td></tr>")
     lines.append(f"<tr style='border-bottom: 1px solid #e2e8f0;'><th style='background: #f8fafc; padding: 10px; text-align: left; font-weight: bold; color: #475569;'>出演女優</th><td style='padding: 10px; color: #e11d48; font-weight: bold;'>{actress_str}</td></tr>")
     lines.append(f"<tr style='border-bottom: 1px solid #e2e8f0;'><th style='background: #f8fafc; padding: 10px; text-align: left; font-weight: bold; color: #475569;'>メーカー</th><td style='padding: 10px; color: #1e293b;'>{maker}</td></tr>")
@@ -51,13 +97,16 @@ def build_ultra_seo_article(item, idx=0):
     lines.append(f"<tr style='border-bottom: 1px solid #e2e8f0;'><th style='background: #f8fafc; padding: 10px; text-align: left; font-weight: bold; color: #475569;'>配信日/発売日</th><td style='padding: 10px; color: #1e293b;'>{date_str}</td></tr>")
     lines.append("</table>")
     
+    # --- 3. 公式あらすじ＆ストーリー考察 ---
     if comment:
         lines.append("<h2 style='border-bottom: 2px solid #f43f5e; padding-bottom: 8px; margin-top: 28px;'>公式ストーリーと展開の背景</h2>")
         lines.append(f"<blockquote style='background: #f8fafc; padding: 18px; border-left: 5px solid #f43f5e; margin: 16px 0; line-height: 1.7; color: #334155; border-radius: 4px;'><p style='margin:0;'>{comment}</p></blockquote>")
         lines.append(f"<p>本作のストーリー設計は非常に洗練されています。単にシチュエーションを並べるだけでなく、登場人物の距離感が徐々に縮まっていく心理描写や、その場の温度感・息遣いまでもが画面越しに伝わってくるような臨場感が構築されています。{maker}ならではの高画質かつ計算された構図が見事です。</p>")
         
+    # --- 4. 独自視点による見どころ徹底分析（3箇条） ---
     lines.append(f"<h2 style='border-bottom: 2px solid #f43f5e; padding-bottom: 8px; margin-top: 28px;'>【徹底検証】『{title}』のここがスゴい！3つの見どころ</h2>")
     
+    # パターンごとの独自テキスト生成
     point1_titles = [f"1. 主演・{actress_str}の圧倒的な表現力と演技美", f"1. {actress_str}が魅せるギャップと表情のリアリティ", f"1. レンズ越しに伝わる{actress_str}の繊細な吐息と存在感"]
     point1_texts = [
         f"画面に映し出された瞬間から、{actress_str}の持つ独特の雰囲気に引き込まれます。特に視線の配り方や微細な仕草の変化は、観る者の本能を揺さぶるのに充分すぎる魅力を持っています。",
@@ -85,6 +134,7 @@ def build_ultra_seo_article(item, idx=0):
     lines.append(f"<h3 style='font-size: 16px; color: #be123c; margin-top: 20px;'>{point3_titles[h_num % len(point3_titles)]}</h3>")
     lines.append(f"<p>{point3_texts[h_num % len(point3_texts)]}</p>")
     
+    # --- 5. こんな人におすすめ / 避けたほうがいい人（意思決定ガイド） ---
     lines.append("<h2 style='border-bottom: 2px solid #f43f5e; padding-bottom: 8px; margin-top: 28px;'>本作品をおすすめする人・満足できる人</h2>")
     lines.append("<div style='background: #fff1f2; border: 1px solid #fecdd3; padding: 16px; border-radius: 8px; margin: 16px 0;'>")
     lines.append("<ul style='margin:0; padding-left: 20px; color: #9f1239; font-weight: 500;'>")
@@ -95,6 +145,7 @@ def build_ultra_seo_article(item, idx=0):
     lines.append("</ul>")
     lines.append("</div>")
     
+    # --- 6. よくある質問 (FAQ) ---
     lines.append("<h2 style='border-bottom: 2px solid #f43f5e; padding-bottom: 8px; margin-top: 28px;'>よくある質問（FAQ）</h2>")
     lines.append("<div style='margin: 16px 0;'>")
     lines.append(f"<p style='font-weight: bold; color: #1e293b; margin-bottom: 4px;'>Q1: 『{title}』は初心者でも楽しめますか？</p>")
@@ -103,25 +154,30 @@ def build_ultra_seo_article(item, idx=0):
     lines.append(f"<p style='color: #475569; margin-bottom: 16px; padding-left: 12px; border-left: 3px solid #cbd5e1;'>A2: {maker}ならではの圧倒的な映像美と、{actress_str}の自然体かつ情熱的な演技の融合が最大の差別化ポイントです。</p>")
     lines.append("</div>")
     
+    # --- 7. まとめと結論 ---
     lines.append("<h2 style='border-bottom: 2px solid #f43f5e; padding-bottom: 8px; margin-top: 28px;'>まとめ：今すぐ体感すべき至高の一本</h2>")
     lines.append(f"<p>『<strong>{title}</strong>』は、キャスト・演出・映像美のすべてが高いレベルで結晶化した、間違いなく今年を代表する傑作の一つです。【{actress_str}】が見せる最高潮のパフォーマンスを、ぜひ高画質な配信でお楽しみください。気になった方は今すぐ公式ページで詳細情報をチェックしてみましょう！</p>")
     
     article_body = "\n".join(lines)
     
+    # 画像リンク処理
     imgs = item.get("imageURL", {})
     large_img = imgs.get("large", "")
     list_img = imgs.get("list", "")
     img_url = large_img if large_img else list_img
     
+    # サンプル画像取得
     sample_imgs = []
     sample_data = item.get("sampleImageURL", {})
     if sample_data and "sample_l" in sample_data and "image" in sample_data["sample_l"]:
         sample_imgs = sample_data["sample_l"]["image"][:5]
         
+    # アフィリエイトURL
     aff_url = item.get("affiliateURL", "")
     if LINK_AFFILIATE_ID and aff_url:
         aff_url = re.sub(r"affiliate_id=[^&]+", f"affiliate_id={LINK_AFFILIATE_ID}", aff_url)
         
+    # タグ・ラベル
     labels = genres[:5]
     if actresses:
         labels.extend(actresses)
@@ -140,3 +196,32 @@ def build_ultra_seo_article(item, idx=0):
         "date": date_str,
         "labels": list(set(labels))
     }
+
+def main():
+    print("超高品質SEO特化記事20件の作成を開始します...")
+    items = fetch_fanza_items()
+    print(f"取得できた作品数: {len(items)}")
+    
+    os.makedirs(POSTS_DIR, exist_ok=True)
+    
+    # 既存の古いpostsファイルをクリア
+    for old_f in os.listdir(POSTS_DIR):
+        if old_f.endswith(".json"):
+            os.remove(os.path.join(POSTS_DIR, old_f))
+            
+    created_count = 0
+    for idx, item in enumerate(items):
+        post_data = build_ultra_seo_article(item, idx)
+        cid = post_data["id"]
+        filepath = os.path.join(POSTS_DIR, f"{cid}.json")
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(post_data, f, ensure_ascii=False, indent=2)
+        print(f"作成成功 [{created_count+1}/20]: {cid} - {post_data['title'][:30]}")
+        created_count += 1
+        if created_count >= TARGET_POST_COUNT:
+            break
+            
+    print("20件の超高品質記事作成が完了しました。")
+
+if __name__ == "__main__":
+    main()
