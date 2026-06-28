@@ -10,9 +10,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes: MetadataRoute.Sitemap = [
     {
       url: `${baseUrl}`,
-      lastModified: new Date(),
+      lastModified: new Date().toISOString(),
       changeFrequency: 'daily',
-      priority: 1,
+      priority: 1.0,
     },
   ];
 
@@ -24,9 +24,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
       posts.forEach((post: any) => {
         if (post && post.id) {
+          let lastMod = new Date().toISOString();
+          if (post.date) {
+            try {
+              lastMod = new Date(post.date).toISOString();
+            } catch (e) {
+              lastMod = new Date().toISOString();
+            }
+          }
           routes.push({
             url: `${baseUrl}/posts/${post.id}`,
-            lastModified: new Date(post.date || new Date()),
+            lastModified: lastMod,
             changeFrequency: 'weekly',
             priority: 0.8,
           });
