@@ -5,6 +5,7 @@ import AmateurBanner from "./AmateurBanner";
 
 interface Post {
   id: string;
+  hinban?: string;
   title: string;
   review: string;
   image: string;
@@ -40,7 +41,8 @@ export default function PostListContainer({ initialPosts }: PostListContainerPro
     const matchesSearch =
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.review.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.maker.toLowerCase().includes(searchQuery.toLowerCase());
+      post.maker.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (post.hinban && post.hinban.toLowerCase().includes(searchQuery.toLowerCase()));
     
     const matchesGenre = selectedGenre === "すべて" || post.genres?.includes(selectedGenre);
     const matchesActress = selectedActress === "すべて" || post.actresses?.includes(selectedActress);
@@ -193,9 +195,16 @@ export default function PostListContainer({ initialPosts }: PostListContainerPro
                   {/* 記事情報レイアウト */}
                   <div className="p-5 flex-grow flex flex-col justify-between space-y-4">
                     <div className="space-y-2.5">
-                      <time dateTime={post.date} className="text-[9px] font-bold text-slate-400 tracking-wider block">
-                        {post.date}
-                      </time>
+                      <div className="flex items-center justify-between text-[9px] font-bold text-slate-400 tracking-wider">
+                        <time dateTime={post.date}>
+                          {post.date}
+                        </time>
+                        {post.hinban && (
+                          <span className="text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100 font-extrabold uppercase">
+                            {post.hinban}
+                          </span>
+                        )}
+                      </div>
                       <h2 className="text-sm md:text-base font-extrabold leading-snug text-slate-800 hover:text-rose-600 transition-colors duration-200 line-clamp-2">
                         {post.title}
                       </h2>
