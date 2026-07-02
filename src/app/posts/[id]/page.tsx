@@ -6,6 +6,7 @@ import { Metadata } from "next";
 
 interface Post {
   id: string;
+  hinban?: string;
   title: string;
   review: string;
   image: string;
@@ -49,19 +50,20 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   try {
     const fileContent = fs.readFileSync(postPath, "utf-8");
     const post: Post = JSON.parse(fileContent);
+    const hinbanText = post.hinban || post.id;
     const descriptionText = post.review
       ? post.review.replace(/<[^>]*>/g, "").slice(0, 120) + "..."
       : `${post.title}の作品詳細と見どころレビューです。`;
 
     return {
-      title: `${post.title} - 禁断の美女ギャルクロニクル`,
+      title: `${post.title} 【品番：${hinbanText}】 - 禁断の美女ギャルクロニクル`,
       description: descriptionText,
-      keywords: (post.genres || []).concat(post.actresses || []).concat(post.labels || []).join(","),
+      keywords: (post.genres || []).concat(post.actresses || []).concat(post.labels || []).concat([hinbanText]).join(","),
       alternates: {
         canonical: `/posts/${id}`,
       },
       openGraph: {
-        title: post.title,
+        title: `${post.title} 【品番：${hinbanText}】`,
         description: descriptionText,
         url: `https://er-3.pages.dev/posts/${id}`,
         type: "article",
@@ -69,7 +71,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       },
       twitter: {
         card: "summary_large_image",
-        title: post.title,
+        title: `${post.title} 【品番：${hinbanText}】`,
         description: descriptionText,
         images: post.image ? [post.image] : [],
       }
@@ -82,9 +84,33 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 }
 
+// 関連作品の検索
+function getRelatedPosts(currentPost: Post, allPostsDir: string): Post[] {
+  if (!currentPost.actresses || currentPost.actresses.length === 0) return [];
+  try {
+    if (!fs.existsSync(allPostsDir)) return [];
+    const files = fs.readdirSync(allPostsDir).filter((f) => f.endsWith(".json") && f !== `${currentPost.id}.json`);
+    const related: Post[] = [];
+    for (const file of files) {
+      const filePath = path.join(allPostsDir, file);
+      const content = fs.readFileSync(filePath, "utf-8");
+      const post: Post = JSON.parse(content);
+      const hasCommonActress = post.actresses?.some(act => currentPost.actresses.includes(act));
+      if (hasCommonActress) {
+        related.push(post);
+      }
+    }
+    return related.slice(0, 3);
+  } catch (e) {
+    console.error("Failed to get related posts:", e);
+    return [];
+  }
+}
+
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const postPath = path.join(process.cwd(), "src", "data", "posts", `${id}.json`);
+  const postsDir = path.join(process.cwd(), "src", "data", "posts");
+  const postPath = path.join(postsDir, `${id}.json`);
 
   if (!fs.existsSync(postPath)) {
     notFound();
@@ -102,6 +128,9 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
     notFound();
   }
 
+  const hinbanText = post.hinban || post.id;
+  const relatedPosts = getRelatedPosts(post, postsDir);
+
   // AI-SEO / GEO 向け JSON-LD 構造化データ
   const cleanReviewText = post.review ? post.review.replace(/<[^>]*>/g, "") : "";
   
@@ -114,6 +143,8 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
       "name": post.title,
       "image": post.image,
       "description": cleanReviewText.slice(0, 150) + "...",
+      "productID": hinbanText,
+      "sku": hinbanText,
       "director": {
         "@type": "Organization",
         "name": post.maker || "メーカー不明"
@@ -253,16 +284,22 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
           )}
 
           {/* メタ情報テーブル */}
-          <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200 text-xs" aria-label="作品基本スペック情報">
+          <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200 text-xs" aria-label="作品基本スペック情報">
+            <div className="space-y-1">
+              <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">品番（検索クエリ）</span>
+              <span className="text-slate-800 font-bold text-xs">
+                {hinbanText}
+              </span>
+            </div>
             <div className="space-y-1">
               <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">出演女優</span>
-              <span className="text-slate-800 font-bold text-sm">
+              <span className="text-slate-800 font-bold text-xs">
                 {post.actresses?.join("、 ") || "紹介制・単体女優"}
               </span>
             </div>
             <div className="space-y-1">
               <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">作品属性</span>
-              <span className="text-slate-700 font-semibold">
+              <span className="text-slate-700 font-semibold text-xs">
                 {post.genres?.join("、 ") || "人妻、不倫、ネトラレ"}
               </span>
             </div>
@@ -276,6 +313,66 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
               dangerouslySetInnerHTML={{ __html: post.review }}
             />
           </section>
+
+          {/* 関連動画・出演女優の作品（CTA形式のボタン） */}
+          {post.actresses && post.actresses.length > 0 && (
+            <section className="pt-6 border-t border-slate-100 space-y-4" aria-label="関連作品・出演女優 of 作品">
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                ▼ 出演女優の関連作品・動画をチェック！
+              </h3>
+              <div className="flex flex-col gap-3">
+                {/* ブログ内の関連作品 */}
+                {relatedPosts.map((relPost) => (
+                  <div key={relPost.id} className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-200/80 gap-3">
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                      {relPost.image && (
+                        <img src={relPost.image} alt={relPost.title} referrerPolicy="no-referrer" className="w-10 h-14 object-cover rounded shadow-sm flex-shrink-0" />
+                      )}
+                      <div className="text-left">
+                        <span className="text-[9px] font-bold text-rose-500 block">品番: {relPost.hinban || relPost.id}</span>
+                        <span className="text-xs font-bold text-slate-800 line-clamp-1">{relPost.title}</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 w-full sm:w-auto">
+                      <Link
+                        href={`/posts/${relPost.id}`}
+                        className="flex-1 sm:flex-none text-center text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 px-4 py-2 rounded-lg transition"
+                      >
+                        レビューを見る
+                      </Link>
+                      <a
+                        href={relPost.affiliate_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 sm:flex-none text-center text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 px-4 py-2 rounded-lg shadow transition"
+                      >
+                        作品を視聴する
+                      </a>
+                    </div>
+                  </div>
+                ))}
+                
+                {/* 女優ごとのFANZA検索リンク */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
+                  {post.actresses.map((actress) => {
+                    const encodedActress = encodeURIComponent(actress);
+                    const searchUrl = `https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fsearch%2F-%2F%3Fsearchstr%3D${encodedActress}%2F&af_id=onchan555-003`;
+                    return (
+                      <a
+                        key={actress}
+                        href={searchUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full text-center text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200/80 py-3 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <span>✨</span> {actress} の全出演作品を見る（FANZA）
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* 極上のプレミアムCTAボタン */}
           <section className="pt-6 border-t border-slate-100 text-center space-y-3" aria-label="視聴誘導">

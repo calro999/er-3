@@ -1,6 +1,27 @@
 import os
 import random
-import requests
+import re
+
+def generate_hinban(content_id):
+    if not content_id:
+        return ""
+    s = content_id.lower()
+    s = re.sub(r'^(h_\d+|h_|\d+)', '', s)
+    match = re.match(r'^([a-z]+)(\d+)', s)
+    if match:
+        alphabetic = match.group(1).upper()
+        numeric = match.group(2)
+        clean_num = numeric.lstrip('0')
+        if not clean_num:
+            clean_num = '0'
+        formatted_standard = f"{alphabetic}-{numeric}"
+        if clean_num != numeric:
+            formatted_clean = f"{alphabetic}-{clean_num}"
+            return f"{formatted_clean} ({formatted_standard})"
+        return formatted_standard
+    return content_id.upper()
+
+quests
 import time
 import json
 import re
@@ -267,6 +288,7 @@ def build_ultra_seo_article(item, link_affiliate_id):
     
     return {
         "id": cid,
+        "hinban": generate_hinban(cid),
         "title": title,
         "review": article_body,
         "image": img_url,

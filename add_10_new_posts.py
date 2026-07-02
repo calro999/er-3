@@ -1,3 +1,24 @@
+import re
+
+def generate_hinban(content_id):
+    if not content_id:
+        return ""
+    s = content_id.lower()
+    s = re.sub(r'^(h_\d+|h_|\d+)', '', s)
+    match = re.match(r'^([a-z]+)(\d+)', s)
+    if match:
+        alphabetic = match.group(1).upper()
+        numeric = match.group(2)
+        clean_num = numeric.lstrip('0')
+        if not clean_num:
+            clean_num = '0'
+        formatted_standard = f"{alphabetic}-{numeric}"
+        if clean_num != numeric:
+            formatted_clean = f"{alphabetic}-{clean_num}"
+            return f"{formatted_clean} ({formatted_standard})"
+        return formatted_standard
+    return content_id.upper()
+
 import os, random, requests, time, json, re, hashlib
 
 CACHE_FILE = "posted_cache.txt"
@@ -186,6 +207,7 @@ def build_ultra_seo_article(item, idx):
     
     return {
         "id": cid,
+        "hinban": generate_hinban(cid),
         "title": title,
         "review": article_body,
         "image": img_url,
