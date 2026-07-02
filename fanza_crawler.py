@@ -21,7 +21,7 @@ def generate_hinban(content_id):
         return formatted_standard
     return content_id.upper()
 
-quests
+import requests
 import time
 import json
 import re
