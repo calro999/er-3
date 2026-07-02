@@ -97,52 +97,6 @@ def fetch_fanza_item():
 
     # ギャル・美少女特化キーワードリスト
     keywords = ["ギャル", "黒ギャル", "制服ギャル", "ギャルJK", "パパ活 ギャル", "コスプレ ギャル", "美少女 ギャル", "ギャルママ"]
-    selected_keyword = random.choice(keywords)
-    print(f"Searching FANZA for keyword: {selected_keyword}")
-
-    random_offset = random.randint(1, 10)
-    print(f"Using random offset: {random_offset}")
-
-    url = "https://api.dmm.com/affiliate/v3/ItemList"
-    params = {
-        "api_id": api_id,
-        "affiliate_id": affiliate_id,
-        "site": "FANZA",
-        "service": "digital",
-        "floor": "videoa",
-        "keyword": selected_keyword,
-        "sort": random.choice(["date", "rank"]),
-        "offset": random_offset,
-        "hits": 40,
-        "output": "json"
-    }
-
-    response = requests.get(url, params=params, timeout=15)
-    print(f"API Response Status: {response.status_code}")
-    
-    if response.status_code != 200:
-        print(f"API Error Response Body: {response.text}")
-        print("")
-        print("===== FANZA API 認証エラー 解決ガイド =====")
-        print(f"  現在使用中のAPI_ID: [{api_id}]")
-        print(f"  現在使用中のAFFILIATE_ID: [{affiliate_id}]")
-        print("")
-        print("よくある原因:")
-        print("  1. GitHubのSecrets設定でIDの値にスペースや改行が入っている")
-        print("  2. affiliate_idの形式が誤っている（正: onchan555-999 / 誤: onchan555-003など番号違い）")
-        print("  3. APIアクセスが承認されていない（FANZA側の審査待ち）")
-        print("")
-        print("対処法: GitHubリポジトリの Settings > Secrets > FANZA_AFFILIATE_ID を確認・修正してください")
-        print("===== ====================== =====")
-        raise Exception(f"FANZA API returned status code {response.status_code}")
-
-    data = response.json()
-    items = data.get("result", {}).get("items", [])
-    
-    if not items:
-        print("No items returned from API with selected keyword and offset.")
-        return None, affiliate_id
-
     posted_cache = load_posted_cache()
     
     # 禁止ワード（VR、バーチャル、レディーボーイ、オカマ、ニューハーフ、熟女系を完全排除）
@@ -151,31 +105,66 @@ def fetch_fanza_item():
         "男の娘", "ゲイ", "熟女", "おばさん", "五十路", "四十路", "六十路", "熟年",
         "マダム", "高齢", "ババ"
     ]
+
+    url = "https://api.dmm.com/affiliate/v3/ItemList"
     
-    selected_item = None
-    for item in items:
-        content_id = item.get("content_id")
-        title = item.get("title", "")
-        genres = " ".join(g.get("name", "") for g in item.get("iteminfo", {}).get("genre", []))
+    # 確実に新しい作品を見つけるために、最大10回キーワードやオフセットを変えて検索を試行する
+    for attempt in range(10):
+        selected_keyword = random.choice(keywords)
+        selected_sort = random.choice(["date", "rank", "date"])
+        random_offset = random.randint(1, 10 + attempt * 5)
         
-        # キャッシュチェック
-        if content_id in posted_cache:
-            continue
-            
-        # 禁止ワードチェック
-        if any(ex in title + " " + genres for ex in exclude_keywords):
-            print(f"Skipping prohibited item: {title[:30]}")
-            continue
-            
-        selected_item = item
-        break
+        print(f"[Attempt {attempt+1}/10] Searching FANZA. Keyword: '{selected_keyword}', Sort: '{selected_sort}', Offset: {random_offset}")
 
-    if not selected_item:
-        print("All fetched items were either already posted or contained prohibited keywords.")
-        return None, affiliate_id
+        params = {
+            "api_id": api_id,
+            "affiliate_id": affiliate_id,
+            "site": "FANZA",
+            "service": "digital",
+            "floor": "videoa",
+            "keyword": selected_keyword,
+            "sort": selected_sort,
+            "offset": random_offset,
+            "hits": 40,
+            "output": "json"
+        }
 
-    # API用(999)ではなくリンク用(003)を記事生成に渡す
-    return selected_item, LINK_AFFILIATE_ID
+        try:
+            response = requests.get(url, params=params, timeout=15)
+            if response.status_code != 200:
+                print(f"API Warning: {response.status_code}")
+                continue
+
+            data = response.json()
+            items = data.get("result", {}).get("items", [])
+            if not items:
+                continue
+
+            for item in items:
+                content_id = item.get("content_id")
+                if not content_id:
+                    continue
+
+                title = item.get("title", "")
+                genres = " ".join(g.get("name", "") for g in item.get("iteminfo", {}).get("genre", []))
+                
+                # キャッシュチェック
+                if content_id in posted_cache:
+                    continue
+                    
+                # 禁止ワードチェック
+                if any(ex in title + " " + genres for ex in exclude_keywords):
+                    print(f"Skipping prohibited item: {title[:30]}")
+                    continue
+                    
+                print(f"-> Found new unposted item: {title} ({content_id})")
+                return item, LINK_AFFILIATE_ID
+        except Exception as e:
+            print(f"Request error on attempt {attempt+1}: {e}")
+        
+        time.sleep(1)
+
+    return None, affiliate_id
 
 def build_ultra_seo_article(item, link_affiliate_id):
     title = item.get("title", "")
