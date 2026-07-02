@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       description: descriptionText,
       keywords: (post.genres || []).concat(post.actresses || []).concat(post.labels || []).concat([hinbanText]).join(","),
       alternates: {
-        canonical: `/posts/${id}`,
+        canonical: `https://er-3.pages.dev/posts/${id}`,
       },
       openGraph: {
         title: `${post.title} 【品番：${hinbanText}】`,
@@ -286,7 +286,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
           {/* メタ情報テーブル */}
           <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200 text-xs" aria-label="作品基本スペック情報">
             <div className="space-y-1">
-              <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">品番（検索クエリ）</span>
+              <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">品番</span>
               <span className="text-slate-800 font-bold text-xs">
                 {hinbanText}
               </span>
