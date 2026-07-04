@@ -56,7 +56,7 @@ export default function RootLayout({
         <meta name="referrer" content="no-referrer" />
         {/* Google Analytics */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-C3LC7MD4BC"
+          src="https://www.googletagmanager.com/gtag/js?id=G-XMJN1W1EBN"
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -65,7 +65,7 @@ export default function RootLayout({
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
 
-            gtag('config', 'G-C3LC7MD4BC');
+            gtag('config', 'G-XMJN1W1EBN');
           `}
         </Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
