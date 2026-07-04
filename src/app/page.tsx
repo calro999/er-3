@@ -111,6 +111,51 @@ export default function Home() {
 
         {/* フィルタおよび記事一覧 */}
         <PostListContainer initialPosts={posts} />
+        {/* 女優別・ジャンル別のクイックリンク集 (内部リンクSEO強化) */}
+        <section className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+              <span className="w-1.5 h-4 bg-rose-500 rounded-full" />
+              人気女優から探す
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {Array.from(new Set(posts.flatMap(p => p.actresses || [])))
+                .filter(Boolean)
+                .slice(0, 45)
+                .map(actress => (
+                  <Link
+                    key={actress}
+                    href={`/actress/${encodeURIComponent(actress)}`}
+                    className="text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 hover:text-rose-700 border border-rose-100 px-3.5 py-2 rounded-xl transition duration-150"
+                  >
+                    {actress}
+                  </Link>
+                ))}
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 pt-6 space-y-4">
+            <h2 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+              <span className="w-1.5 h-4 bg-slate-700 rounded-full" />
+              人気のジャンルから探す
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {Array.from(new Set(posts.flatMap(p => p.genres || [])))
+                .filter(Boolean)
+                .slice(0, 30)
+                .map(genre => (
+                  <Link
+                    key={genre}
+                    href={`/genre/${encodeURIComponent(genre)}`}
+                    className="text-xs font-bold text-slate-600 bg-slate-50 hover:bg-slate-100 hover:text-slate-800 border border-slate-200/80 px-3.5 py-2 rounded-xl transition duration-150"
+                  >
+                    {genre}
+                  </Link>
+                ))}
+            </div>
+          </div>
+        </section>
+
       </div>
     </>
   );
