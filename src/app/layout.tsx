@@ -30,17 +30,17 @@ export const metadata: Metadata = {
     url: "https://er-3.pages.dev",
     siteName: "禁断 of 美女ギャルクロニクル",
     title: {
-    template: "%s | 美女ギャルクロニクル",
-    default: "禁断の美女ギャルクロニクル - 素人・流出・ハプニング濃厚レビュー",
-  },
+      template: "%s | 美女ギャルクロニクル",
+      default: "禁断の美女ギャルクロニクル - 素人・流出・ハプニング濃厚レビュー",
+    },
     description: "決して覗いてはならない、素人たちの裏の顔。裏アカ、流出、ハプニング映像を徹底レビュー。あなたの本能を直撃するリアルな快感記録。マニアが厳選したお宝映像アーカイブ。",
   },
   twitter: {
     card: "summary_large_image",
     title: {
-    template: "%s | 美女ギャルクロニクル",
-    default: "禁断の美女ギャルクロニクル - 素人・流出・ハプニング濃厚レビュー",
-  },
+      template: "%s | 美女ギャルクロニクル",
+      default: "禁断の美女ギャルクロニクル - 素人・流出・ハプニング濃厚レビュー",
+    },
     description: "決して覗いてはならない、素人たちの裏の顔。裏アカ、流出、ハプニング映像を徹底レビュー。あなたの本能を直撃するリアルな快感記録。マニアが厳選したお宝映像アーカイブ。",
   },
 };
@@ -56,7 +56,7 @@ export default function RootLayout({
         <meta name="referrer" content="no-referrer" />
         {/* Google Analytics */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-XMJN1W1EBN"
+          src="https://www.googletagmanager.com/gtag/js?id=G-BTJKTTHLHB"
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -65,7 +65,7 @@ export default function RootLayout({
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
 
-            gtag('config', 'G-XMJN1W1EBN');
+            gtag('config', 'G-BTJKTTHLHB');
           `}
         </Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
