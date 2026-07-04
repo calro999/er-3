@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { Metadata } from "next";
+import Link from "next/link";
 import PostListContainer from "./components/PostListContainer";
 
 interface Post {
