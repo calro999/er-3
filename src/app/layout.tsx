@@ -5,12 +5,21 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://er-3.pages.dev"),
-  title: "禁断の美女ギャルクロニクル - 素人・流出・ハプニング濃厚レビュー",
+  title: {
+    template: "%s | 美女ギャルクロニクル",
+    default: "禁断の美女ギャルクロニクル - 素人・流出・ハプニング濃厚レビュー",
+  },
   description: "決して覗いてはならない、素人たちの裏の顔。裏アカ、流出、ハプニング映像を徹底レビュー。あなたの本能を直撃するリアルな快感記録。マニアが厳選したお宝映像アーカイブ。",
   keywords: [
-    "素人", "流出", "裏アカ", "ハプニング", "マジックミラー", "ナンパ", "パパ活", "リアル",
-    "暴露", "お宝映像", "官能", "大人向けレビュー"
+    "美女 AV", "ギャル AV", "美女 レビュー", "ギャル 動画", "巨乳 AV",
+    "スレンダー AV", "FANZA 美女", "AV 感想", "AV レビュー", "品番 検索",
+    "AV女優 レビュー", "FANZA おすすめ", "AV ランキング 2026",
+    "ギャル 系 AV", "美人 AV女優"
   ],
+  robots: {
+    index: true, follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
   referrer: "no-referrer",
   alternates: {
     canonical: "/",
@@ -20,12 +29,18 @@ export const metadata: Metadata = {
     locale: "ja_JP",
     url: "https://er-3.pages.dev",
     siteName: "禁断 of 美女ギャルクロニクル",
-    title: "禁断の美女ギャルクロニクル - 素人・流出・ハプニング濃厚レビュー",
+    title: {
+    template: "%s | 美女ギャルクロニクル",
+    default: "禁断の美女ギャルクロニクル - 素人・流出・ハプニング濃厚レビュー",
+  },
     description: "決して覗いてはならない、素人たちの裏の顔。裏アカ、流出、ハプニング映像を徹底レビュー。あなたの本能を直撃するリアルな快感記録。マニアが厳選したお宝映像アーカイブ。",
   },
   twitter: {
     card: "summary_large_image",
-    title: "禁断の美女ギャルクロニクル - 素人・流出・ハプニング濃厚レビュー",
+    title: {
+    template: "%s | 美女ギャルクロニクル",
+    default: "禁断の美女ギャルクロニクル - 素人・流出・ハプニング濃厚レビュー",
+  },
     description: "決して覗いてはならない、素人たちの裏の顔。裏アカ、流出、ハプニング映像を徹底レビュー。あなたの本能を直撃するリアルな快感記録。マニアが厳選したお宝映像アーカイブ。",
   },
 };
@@ -77,6 +92,8 @@ export default function RootLayout({
             </a>
             <nav className="flex items-center gap-5 text-xs font-bold text-slate-500">
               <a href="/" className="hover:text-slate-950 transition">Home</a>
+              <span className="text-slate-300">/</span>
+              <a href="/ranking" className="hover:text-rose-600 transition">ランキング</a>
               <span className="text-slate-300">/</span>
               <a href="https://haitoku.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 transition text-rose-700 border border-rose-500/30 px-2 py-1 rounded">姉妹サイト: 深夜書斎</a>
               <span className="text-slate-300">/</span>

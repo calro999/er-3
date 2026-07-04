@@ -55,10 +55,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       ? post.review.replace(/<[^>]*>/g, "").slice(0, 120) + "..."
       : `${post.title}の作品詳細と見どころレビューです。`;
 
+    const actressText = (post.actresses || []).slice(0, 2).join("・");
+    const keywords = (post.genres || []).concat(post.actresses || []).concat(post.labels || []).concat([hinbanText, "レビュー", "感想", "評価", "FANZA"]);
     return {
-      title: `${post.title} 【品番：${hinbanText}】 - 禁断の美女ギャルクロニクル`,
-      description: descriptionText,
-      keywords: (post.genres || []).concat(post.actresses || []).concat(post.labels || []).concat([hinbanText]).join(","),
+      title: `${post.title}【${hinbanText}】${actressText ? actressText + 'の' : ''}レビュー・感想・評価`,
+      description: descriptionText.slice(0, 155),
+      keywords: keywords.join(","),
       alternates: {
         canonical: `https://er-3.pages.dev/posts/${id}`,
       },
@@ -188,6 +190,39 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         "position": 2,
         "name": post.title,
         "item": `https://er-3.pages.dev/posts/${post.id}`
+      }
+    ]
+  };
+
+
+  // Article構造化データ
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": post.title,
+    "description": (post.review || "").replace(/<[^>]*>/g, "").slice(0, 150),
+    "image": post.image ? [post.image] : [],
+    "author": { "@type": "Organization", "name": "美女ギャルクロニクル" },
+    "publisher": { "@type": "Organization", "name": "美女ギャルクロニクル" },
+    "datePublished": post.date || "",
+    "dateModified": post.date || "",
+    "url": `https://er-3.pages.dev/posts/${id}`,
+  };
+
+  // FAQPage構造化データ
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": `${post.title}はどこで見られますか？`,
+        "acceptedAnswer": { "@type": "Answer", "text": `${post.title}はFANZA（DMM）で配信されています。品番は${post.hinban || post.id}です。` }
+      },
+      {
+        "@type": "Question",
+        "name": `${post.title}の出演女優は？`,
+        "acceptedAnswer": { "@type": "Answer", "text": (post.actresses || []).length > 0 ? `出演女優は${(post.actresses || []).join("・")}です。` : `出演女優情報はFANZA（DMM）の作品ページでご確認ください。` }
       }
     ]
   };
