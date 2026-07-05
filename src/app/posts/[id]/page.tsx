@@ -391,7 +391,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
                   {post.actresses.map((actress) => {
                     const encodedActress = encodeURIComponent(actress);
-                    const searchUrl = `https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fsearch%2F-%2F%3Fsearchstr%3D${encodedActress}%2F&af_id=`;
+                    const searchUrl = `https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fsearch%2F-%2F%3Fsearchstr%3D${encodedActress}%2F&af_id=onchan555-008`;
                     return (
                       <a
                         key={actress}
