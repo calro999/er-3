@@ -160,7 +160,7 @@ export default async function ActressPage({ params }: { params: Promise<{ name: 
           </div>
         </section>
         <section className="text-center py-6">
-          <a href={`https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fsearch%2F-%2F%3Fsearchstr%3D${encodeURIComponent(actressName)}%2F&af_id=onchan555-003`} target="_blank" rel="noopener noreferrer"
+          <a href={`https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fsearch%2F-%2F%3Fsearchstr%3D${encodeURIComponent(actressName)}%2F&af_id=`} target="_blank" rel="noopener noreferrer"
             className="inline-block px-8 py-4 text-base font-extrabold text-white bg-gradient-to-r from-rose-500 via-rose-600 to-pink-600 rounded-xl shadow-md transition duration-200">
             ✨ {actressName} の全作品をFANZAで見る
           </a>

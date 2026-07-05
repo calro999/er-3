@@ -61,7 +61,7 @@ def save_to_cache(content_id):
     with open(CACHE_FILE, "a", encoding="utf-8") as f:
         f.write(f"{content_id}\n")
 
-LINK_AFFILIATE_ID = "onchan555-003"  # 記事内アフィリリンク用（固定）
+LINK_AFFILIATE_ID = ""  # 記事内アフィリリンク用（固定）
 
 def fetch_fanza_item():
     api_id = os.environ.get("FANZA_API_ID")

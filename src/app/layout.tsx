@@ -110,9 +110,9 @@ export default function RootLayout({
         <div className="flex-grow w-full relative flex justify-center items-start">
           {/* 左サイド追従バナー */}
           <aside className="hidden xl:flex flex-col fixed left-4 top-24 w-[270px] z-30 space-y-6 items-center">
-            <AmateurBanner affiliateId="onchan555-003" bannerId="1082_300_250" />
-            <AmateurBanner affiliateId="onchan555-003" bannerId="377_300_250" />
-            <AmateurBanner affiliateId="onchan555-003" bannerId="1980_300_250" />
+            <AmateurBanner affiliateId="" bannerId="1082_300_250" />
+            <AmateurBanner affiliateId="" bannerId="377_300_250" />
+            <AmateurBanner affiliateId="" bannerId="1980_300_250" />
           </aside>
 
           <main className="flex-grow max-w-6xl w-full mx-auto px-4 py-8 md:py-12">
@@ -121,9 +121,9 @@ export default function RootLayout({
 
           {/* 右サイド追従バナー */}
           <aside className="hidden xl:flex flex-col fixed right-4 xl:right-[calc((100vw-1152px)/4-135px)] top-24 w-[270px] z-30 space-y-6 items-center">
-            <AmateurBanner affiliateId="onchan555-003" bannerId="75_300_250" />
-            <AmateurBanner affiliateId="onchan555-003" bannerId="68_300_250" />
-            <AmateurBanner affiliateId="onchan555-003" bannerId="1506_300_250" />
+            <AmateurBanner affiliateId="" bannerId="75_300_250" />
+            <AmateurBanner affiliateId="" bannerId="68_300_250" />
+            <AmateurBanner affiliateId="" bannerId="1506_300_250" />
           </aside>
         </div>
 

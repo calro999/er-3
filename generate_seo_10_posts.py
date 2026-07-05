@@ -25,7 +25,7 @@ CACHE_FILE = "posted_cache.txt"
 POSTS_DIR = "src/data/posts"
 API_ID = "4Lx0ftRf17Uuad6Ud7Gb"
 API_AFFILIATE_ID = "onchan555-999"
-LINK_AFFILIATE_ID = "onchan555-003"
+LINK_AFFILIATE_ID = ""
 TARGET_POST_COUNT = 10
 
 def clean_for_safety(text):
