@@ -135,6 +135,7 @@ def generate_custom_seo_article(item):
     aff_url = item.get("affiliateURL", "")
     if LINK_AFFILIATE_ID and aff_url:
         aff_url = re.sub(r"affiliate_id=[^&]+", f"affiliate_id={LINK_AFFILIATE_ID}", aff_url)
+    aff_url = re.sub(r"af_id=[^&]+", f"af_id={LINK_AFFILIATE_ID}", aff_url)
         
     # タグ・ラベル
     labels = genres[:5]
