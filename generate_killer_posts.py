@@ -34,6 +34,62 @@ def load_posted_cache():
             return set(line.strip() for line in f if line.strip())
     return set()
 
+def generate_fake_reviews():
+    score_ero = round(random.uniform(4.0, 5.0), 1)
+    score_story = round(random.uniform(3.0, 4.8), 1)
+    score_camera = round(random.uniform(3.5, 4.9), 1)
+    
+    comments_pool = [
+        "マジで抜けた。今年トップクラスの当たり。",
+        "女優の表情がエロすぎる…絶対リピートする。",
+        "カメラワークが神。見たいところをしっかり映してくれてる。",
+        "最初は期待してなかったけど、後半の展開で完全に昇天した。",
+        "SNSで話題になってたから見たけど、噂以上の破壊力だったわ。",
+        "このシリーズはハズレがない。今回も最高。",
+        "パッケージ詐欺なし！本編の方がエロいという奇跡。",
+        "何度見ても抜ける。保存版確定です。"
+    ]
+    
+    selected_comments = random.sample(comments_pool, 3)
+    
+    html = f"""
+<div class="mt-8 bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm">
+    <h3 class="text-lg font-extrabold text-slate-800 mb-4 border-b border-slate-200 pb-2">⭐ ユーザーの評価・口コミ</h3>
+    
+    <div class="flex flex-wrap gap-4 mb-6">
+        <div class="bg-white px-4 py-2 rounded-xl border border-rose-100 shadow-sm text-center flex-1 min-w-[100px]">
+            <span class="block text-[10px] text-slate-500 font-bold mb-1">エロ度</span>
+            <span class="text-xl font-black text-rose-500">{score_ero}</span><span class="text-sm text-slate-400">/5.0</span>
+        </div>
+        <div class="bg-white px-4 py-2 rounded-xl border border-rose-100 shadow-sm text-center flex-1 min-w-[100px]">
+            <span class="block text-[10px] text-slate-500 font-bold mb-1">ストーリー</span>
+            <span class="text-xl font-black text-rose-500">{score_story}</span><span class="text-sm text-slate-400">/5.0</span>
+        </div>
+        <div class="bg-white px-4 py-2 rounded-xl border border-rose-100 shadow-sm text-center flex-1 min-w-[100px]">
+            <span class="block text-[10px] text-slate-500 font-bold mb-1">カメラワーク</span>
+            <span class="text-xl font-black text-rose-500">{score_camera}</span><span class="text-sm text-slate-400">/5.0</span>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative">
+            <span class="absolute -top-3 left-4 bg-rose-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">レビュー</span>
+            <p class="text-sm text-slate-700 font-medium leading-relaxed">「{selected_comments[0]}」</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative">
+            <span class="absolute -top-3 left-4 bg-rose-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">レビュー</span>
+            <p class="text-sm text-slate-700 font-medium leading-relaxed">「{selected_comments[1]}」</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative">
+            <span class="absolute -top-3 left-4 bg-rose-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">レビュー</span>
+            <p class="text-sm text-slate-700 font-medium leading-relaxed">「{selected_comments[2]}」</p>
+        </div>
+    </div>
+</div>
+"""
+    return html
+
+
 def save_to_cache(cid):
     with open(CACHE_FILE, "a", encoding="utf-8") as f:
         f.write(f"{cid}\n")
@@ -179,6 +235,9 @@ def main():
         
         print(f"\n  [{gen+1}/{TARGET_POST_COUNT}] {t[:50]}...")
         review = build_review(item, gen)
+        
+        fake_reviews = generate_fake_reviews()
+        review += "\\n" + fake_reviews
         
         genres = [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])]
         actresses = [a.get("name", "") for a in item.get("iteminfo", {}).get("actress", [])]

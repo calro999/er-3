@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import AmateurBanner from "./components/AmateurBanner";
+import TagCloud from "./components/TagCloud";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -131,6 +132,9 @@ export default function RootLayout({
 
 
 
+        {/* ランダムタグクラウド */}
+        <TagCloud />
+
         {/* ミニマル・モダンなフッター */}
         <footer className="border-t border-slate-200 bg-white py-10 text-xs text-slate-500 shadow-inner">
           <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -142,6 +146,8 @@ export default function RootLayout({
             </div>
             <div className="flex flex-wrap gap-4 text-[10px] font-bold text-slate-500 justify-center md:justify-end">
               <a href="/" className="hover:text-slate-950">ホーム</a>
+              <span>•</span>
+              <a href="/archives" className="hover:text-rose-600 text-slate-600 font-bold">全記事一覧（サイトマップ）</a>
               <span>•</span>
               <span className="text-slate-400">姉妹サイト:</span>
               <a href="https://haitoku.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 text-rose-700">背徳の深夜書斎</a>
