@@ -51,21 +51,31 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const fileContent = fs.readFileSync(postPath, "utf-8");
     const post: Post = JSON.parse(fileContent);
     const hinbanText = post.hinban || post.id;
-    const descriptionText = post.review
-      ? post.review.replace(/<[^>]*>/g, "").slice(0, 120) + "..."
-      : `${post.title}の作品詳細と見どころレビューです。`;
-
+    const shortTitle = post.title.length > 15 ? post.title.slice(0, 15) + '…' : post.title;
     const actressText = (post.actresses || []).slice(0, 2).join("・");
+    const genreText = (post.genres || []).slice(0, 3).join("・");
+
+    const titleText = actressText 
+      ? `【ガチ評価】${hinbanText}（${shortTitle}）は本当に抜ける？${actressText}の出演シーンを徹底レビュー！`
+      : `【ガチ評価】${hinbanText}（${shortTitle}）は本当に抜ける？出演シーンを徹底レビュー！`;
+
+    const cleanReview = post.review ? post.review.replace(/<[^>]*>/g, "").replace(/\\s+/g, " ") : "";
+    const reviewExcerpt = cleanReview.slice(0, 50) + "...";
+
+    const descriptionText = actressText
+      ? `${actressText}の最新作『${hinbanText}』を最速レビュー！SNSで話題の「${genreText || '注目ジャンル'}」はサンプル詐欺じゃない？【${reviewExcerpt}】ハズレを引きたくない方は購入前の参考にどうぞ！`
+      : `最新作『${hinbanText}』を最速レビュー！SNSで話題の「${genreText || '注目ジャンル'}」はサンプル詐欺じゃない？【${reviewExcerpt}】ハズレを引きたくない方は購入前の参考にどうぞ！`;
+
     const keywords = (post.genres || []).concat(post.actresses || []).concat(post.labels || []).concat([hinbanText, "レビュー", "感想", "評価", "FANZA"]);
     return {
-      title: `${post.title}【${hinbanText}】${actressText ? actressText + 'の' : ''}レビュー・感想・評価`,
+      title: titleText,
       description: descriptionText.slice(0, 155),
       keywords: keywords.join(","),
       alternates: {
         canonical: `https://er-3.pages.dev/posts/${id}`,
       },
       openGraph: {
-        title: `${post.title} 【品番：${hinbanText}】`,
+        title: titleText,
         description: descriptionText,
         url: `https://er-3.pages.dev/posts/${id}`,
         type: "article",
@@ -73,7 +83,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       },
       twitter: {
         card: "summary_large_image",
-        title: `${post.title} 【品番：${hinbanText}】`,
+        title: titleText,
         description: descriptionText,
         images: post.image ? [post.image] : [],
       }

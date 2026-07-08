@@ -40,14 +40,15 @@ function getAllPosts(): Post[] {
 export async function generateMetadata({ params }: { params: Promise<{ name: string }> }): Promise<Metadata> {
   const { name } = await params;
   const actressName = decodeURIComponent(name);
-  const description = `${actressName}の全出演作品レビュー・感想まとめ。FANZAで配信中の${actressName}の動画をジャンル別に紹介。${actressName}のおすすめ作品・評価・見どころを徹底解説します。`;
+  const titleText = `【品番特定】「${actressName}」あのSNSで話題のシチュエーション動画の正体はこれ！出演作まとめ`;
+  const descriptionText = `Xや5chで「可愛すぎる」「エロすぎる」と話題の、${actressName}のアダルト動画・品番を特定！あの抜ける神作の概要、見どころ、お得にFANZAで視聴する方法をどこよりも分かりやすく解説します。`;
   return {
-    title: `${actressName} レビュー・全出演作品まとめ【美女ギャルクロニクル】`,
-    description,
+    title: titleText,
+    description: descriptionText,
     keywords: [`${actressName} レビュー`, `${actressName} 出演作品`, `${actressName} AV`, `${actressName} FANZA`, `${actressName} 動画`, "AV女優 レビュー", "FANZA 女優"].join(","),
     alternates: { canonical: `https://er-3.pages.dev/actress/${name}` },
-    openGraph: { title: `${actressName} レビュー・全出演作品まとめ`, description, url: `https://er-3.pages.dev/actress/${name}`, type: "website" },
-    twitter: { card: "summary_large_image", title: `${actressName} レビュー・全出演作品まとめ`, description },
+    openGraph: { title: titleText, description: descriptionText, url: `https://er-3.pages.dev/actress/${name}`, type: "website" },
+    twitter: { card: "summary_large_image", title: titleText, description: descriptionText },
   };
 }
 
