@@ -3,6 +3,7 @@ import path from "path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { censorText } from "@/lib/censor";
 
 interface Post {
   id: string;
@@ -59,7 +60,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       ? `【ガチ評価】${hinbanText}（${shortTitle}）は本当に抜ける？${actressText}の出演シーンを徹底レビュー！`
       : `【ガチ評価】${hinbanText}（${shortTitle}）は本当に抜ける？出演シーンを徹底レビュー！`;
 
-    const cleanReview = post.review ? post.review.replace(/<[^>]*>/g, "").replace(/\\s+/g, " ") : "";
+    const cleanReview = post.review ? post.review.replace(/<[^>]*>/g, "").replace(/\s+/g, " ") : "";
     const reviewExcerpt = cleanReview.slice(0, 50) + "...";
 
     const descriptionText = actressText
@@ -75,16 +76,18 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         canonical: `https://er-3.pages.dev/posts/${id}`,
       },
       openGraph: {
-        title: titleText,
-        description: descriptionText,
+        title: censorText(titleText),
+        description: censorText(descriptionText),
         url: `https://er-3.pages.dev/posts/${id}`,
         type: "article",
-        images: post.image ? [{ url: post.image, alt: post.title }] : [],
+        publishedTime: post.date || undefined,
+        authors: ["禁断の美女ギャルクロニクル"],
+        images: post.image ? [{ url: post.image, alt: censorText(post.title), width: 800, height: 538 }] : [],
       },
       twitter: {
         card: "summary_large_image",
-        title: titleText,
-        description: descriptionText,
+        title: censorText(titleText),
+        description: censorText(descriptionText),
         images: post.image ? [post.image] : [],
       }
     };
