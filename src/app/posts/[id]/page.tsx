@@ -450,7 +450,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             <Script
               async
               src="https://adm.shinobi.jp/st/auto.js"
-              data-admax-id="6940cf426d8b05585fbd28930455285d"
+              data-admax-id="fd7f787129eedcb646eaa9fdc1978e9a"
             />
           </div>
         </div>
