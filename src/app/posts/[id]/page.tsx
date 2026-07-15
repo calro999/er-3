@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import Link from "next/link";
+import Script from "next/script";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { censorText } from "@/lib/censor";
@@ -444,6 +445,14 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </p>
           </section>
 
+          {/* Admax Advertisement */}
+          <div className="pt-8 text-center flex justify-center">
+            <Script
+              async
+              src="https://adm.shinobi.jp/st/auto.js"
+              data-admax-id="6940cf426d8b05585fbd28930455285d"
+            />
+          </div>
         </div>
       </article>
     </>
