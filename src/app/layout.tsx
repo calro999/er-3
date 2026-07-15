@@ -156,6 +156,9 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+
+        {/* 忍者AdMax (ユーザー指定により /body の直前に配置) */}
+        <script async src="https://adm.shinobi.jp/st/auto.js" data-admax-id="fd7f787129eedcb646eaa9fdc1978e9a" suppressHydrationWarning />
       </body>
     </html>
   );
