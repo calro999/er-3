@@ -14,6 +14,7 @@ interface Post {
   image: string;
   sample_images: string[];
   affiliate_url: string;
+  sample_movie_url?: string;
   genres: string[];
   actresses: string[];
   maker: string;
@@ -311,31 +312,51 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </a>
           </section>
 
-          {/* サンプル写真スライド */}
-          {post.sample_images && post.sample_images.length > 0 && (
-            <section className="space-y-3" aria-label="サンプルプレビュー画像">
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                ▼ 現場の瞬間（サンプル写真）
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                {post.sample_images.map((imgUrl, idx) => (
-                  <a
-                    key={idx}
-                    href={post.affiliate_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block aspect-video relative overflow-hidden rounded-lg border border-slate-200 bg-slate-100 hover:border-rose-500 transition duration-200"
-                  >
-                    <img
-                      src={imgUrl}
-                      alt={`${post.title} サンプル場面カット ${idx + 1}`}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover opacity-90 hover:opacity-100 transition duration-200"
-                      loading="lazy"
+          {/* サンプル動画と写真スライド */}
+          {(post.sample_movie_url || (post.sample_images && post.sample_images.length > 0)) && (
+            <section className="space-y-6" aria-label="サンプルプレビュー">
+              {post.sample_movie_url && (
+                <div className="space-y-3">
+                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    ▼ 現場の映像（サンプル動画）
+                  </h3>
+                  <div className="w-full aspect-video rounded-xl overflow-hidden bg-slate-900 shadow-xl border border-rose-900/30">
+                    <iframe 
+                      src={post.sample_movie_url} 
+                      className="w-full h-full border-none" 
+                      allowFullScreen 
+                      scrolling="no"
                     />
-                  </a>
-                ))}
-              </div>
+                  </div>
+                </div>
+              )}
+
+              {post.sample_images && post.sample_images.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    ▼ 現場の瞬間（サンプル写真）
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {post.sample_images.map((imgUrl, idx) => (
+                      <a
+                        key={idx}
+                        href={post.affiliate_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block aspect-video relative overflow-hidden rounded-lg border border-slate-200 bg-slate-100 hover:border-rose-500 transition duration-200"
+                      >
+                        <img
+                          src={imgUrl}
+                          alt={`${post.title} サンプル場面カット ${idx + 1}`}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover opacity-90 hover:opacity-100 transition duration-200"
+                          loading="lazy"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </section>
           )}
 
