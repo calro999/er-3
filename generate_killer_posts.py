@@ -237,7 +237,7 @@ def main():
         review = build_review(item, gen)
         
         fake_reviews = generate_fake_reviews()
-        review += "\\n" + fake_reviews
+        review += "\n" + fake_reviews
         
         genres = [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])]
         actresses = [a.get("name", "") for a in item.get("iteminfo", {}).get("actress", [])]

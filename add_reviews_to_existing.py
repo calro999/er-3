@@ -97,9 +97,9 @@ def main():
         
         if len(parts) > 1:
             # Internal links exist, insert before it
-            new_review = parts[0] + "\\n" + fake_reviews + "\\n<h3>あわせて読みたいおすすめ記事</h3>" + parts[1]
+            new_review = parts[0] + "\n" + fake_reviews + "\n<h3>あわせて読みたいおすすめ記事</h3>" + parts[1]
         else:
-            new_review = review_html + "\\n" + fake_reviews
+            new_review = review_html + "\n" + fake_reviews
 
         data["review"] = new_review
 

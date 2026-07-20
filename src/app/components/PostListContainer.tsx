@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import AmateurBanner from "./AmateurBanner";
 
 interface Post {
@@ -37,19 +37,31 @@ export default function PostListContainer({ initialPosts }: PostListContainerPro
   const allLabels = ["すべて", ...Array.from(new Set(initialPosts.flatMap((p) => p.labels || [])))];
 
   // フィルタリング処理（検索、ジャンル、女優、ラベル）
-  const filteredPosts = initialPosts.filter((post) => {
-    const matchesSearch =
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.review.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.maker.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (post.hinban && post.hinban.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesGenre = selectedGenre === "すべて" || post.genres?.includes(selectedGenre);
-    const matchesActress = selectedActress === "すべて" || post.actresses?.includes(selectedActress);
-    const matchesLabel = selectedLabel === "すべて" || post.labels?.includes(selectedLabel);
+  const filteredPosts = useMemo(() => {
+    return initialPosts.filter((post) => {
+      const matchesSearch =
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.review.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.maker.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (post.hinban && post.hinban.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      const matchesGenre = selectedGenre === "すべて" || post.genres?.includes(selectedGenre);
+      const matchesActress = selectedActress === "すべて" || post.actresses?.includes(selectedActress);
+      const matchesLabel = selectedLabel === "すべて" || post.labels?.includes(selectedLabel);
 
-    return matchesSearch && matchesGenre && matchesActress && matchesLabel;
-  });
+      return matchesSearch && matchesGenre && matchesActress && matchesLabel;
+    });
+  }, [initialPosts, searchQuery, selectedGenre, selectedActress, selectedLabel]);
+
+  // 無限スクロール・もっと見る用の表示件数管理
+  const [visibleCount, setVisibleCount] = useState<number>(48);
+
+  // フィルター条件が変わった時は表示件数をリセットする
+  useEffect(() => {
+    setVisibleCount(48);
+  }, [searchQuery, selectedGenre, selectedActress, selectedLabel]);
+
+  const displayedPosts = filteredPosts.slice(0, visibleCount);
 
   const hasActiveFilters = searchQuery || selectedGenre !== "すべて" || selectedActress !== "すべて" || selectedLabel !== "すべて";
 
@@ -165,7 +177,7 @@ export default function PostListContainer({ initialPosts }: PostListContainerPro
               { affiliateId: "", bannerId: "1506_300_250" },
             ];
 
-            filteredPosts.forEach((post, index) => {
+            displayedPosts.forEach((post, index) => {
               list.push(
                 <article
                   key={post.id}
@@ -251,6 +263,19 @@ export default function PostListContainer({ initialPosts }: PostListContainerPro
 
             return list;
           })()}
+        </div>
+      )}
+      
+      {/* もっと見るボタン */}
+      {visibleCount < filteredPosts.length && (
+        <div className="flex justify-center mt-8 md:mt-12">
+          <button
+            onClick={() => setVisibleCount((prev) => prev + 48)}
+            className="bg-white hover:bg-slate-50 text-slate-700 font-bold border border-slate-300 px-8 py-3.5 rounded-full shadow-sm transition hover:shadow flex items-center gap-2"
+          >
+            もっと見る ({filteredPosts.length - visibleCount}件)
+            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+          </button>
         </div>
       )}
     </div>
