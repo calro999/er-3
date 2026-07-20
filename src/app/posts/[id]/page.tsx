@@ -3,6 +3,7 @@ import path from "path";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 import { Metadata } from "next";
 import { censorText } from "@/lib/censor";
 
@@ -312,6 +313,37 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </a>
           </section>
 
+          {/* メタ情報テーブル */}
+          <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200 text-xs" aria-label="作品基本スペック情報">
+            <div className="space-y-1">
+              <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">品番</span>
+              <span className="text-slate-800 font-bold text-xs">
+                {hinbanText}
+              </span>
+            </div>
+            <div className="space-y-1">
+              <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">出演女優</span>
+              <span className="text-slate-800 font-bold text-xs">
+                {post.actresses?.join("、 ") || "紹介制・単体女優"}
+              </span>
+            </div>
+            <div className="space-y-1">
+              <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">作品属性</span>
+              <span className="text-slate-700 font-semibold text-xs">
+                {post.genres?.join("、 ") || "人妻、不倫、ネトラレ"}
+              </span>
+            </div>
+          </section>
+
+          {/* 濃厚レビューテキスト */}
+          <section className="prose prose-slate max-w-none text-slate-600 space-y-6 leading-relaxed text-sm md:text-base font-medium" aria-label="詳細考察レビュー">
+            <h2 className="sr-only">レビュー詳細</h2>
+            <div
+              className="review-content-html"
+              dangerouslySetInnerHTML={{ __html: post.review }}
+            />
+          </section>
+
           {/* サンプル動画と写真スライド */}
           {(post.sample_movie_url || (post.sample_images && post.sample_images.length > 0)) && (
             <section className="space-y-6" aria-label="サンプルプレビュー">
@@ -360,36 +392,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </section>
           )}
 
-          {/* メタ情報テーブル */}
-          <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200 text-xs" aria-label="作品基本スペック情報">
-            <div className="space-y-1">
-              <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">品番</span>
-              <span className="text-slate-800 font-bold text-xs">
-                {hinbanText}
-              </span>
-            </div>
-            <div className="space-y-1">
-              <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">出演女優</span>
-              <span className="text-slate-800 font-bold text-xs">
-                {post.actresses?.join("、 ") || "紹介制・単体女優"}
-              </span>
-            </div>
-            <div className="space-y-1">
-              <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">作品属性</span>
-              <span className="text-slate-700 font-semibold text-xs">
-                {post.genres?.join("、 ") || "人妻、不倫、ネトラレ"}
-              </span>
-            </div>
-          </section>
-
-          {/* 濃厚レビューテキスト */}
-          <section className="prose prose-slate max-w-none text-slate-600 space-y-6 leading-relaxed text-sm md:text-base font-medium" aria-label="詳細考察レビュー">
-            <h2 className="sr-only">レビュー詳細</h2>
-            <div
-              className="review-content-html"
-              dangerouslySetInnerHTML={{ __html: post.review }}
-            />
-          </section>
+          
 
           {/* 関連動画・出演女優の作品（CTA形式のボタン） */}
           <section className="pt-6 border-t border-slate-100 space-y-4" aria-label="関連作品・動画をチェック">
