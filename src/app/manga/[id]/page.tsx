@@ -12,6 +12,7 @@ interface MangaPost {
   image: string;
   sample_images: string[];
   affiliate_url: string;
+  tachiyomi_url?: string;
   genres: string[];
   author: string[];
   publisher?: string;
@@ -115,9 +116,6 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
               <span className="inline-flex text-[9px] font-bold tracking-widest text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded">
                 📚 MANGA REVIEW
               </span>
-              {post.hinban && (
-                <p className="text-xs font-bold text-purple-300">{post.hinban}</p>
-              )}
               <h1 className="text-2xl md:text-3xl font-black text-white leading-snug">{post.title}</h1>
 
               <div className="flex flex-wrap gap-3 text-xs text-slate-300">
@@ -139,40 +137,22 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
                 ))}
               </div>
 
-              <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer"
-                className="inline-block mt-2 px-6 py-3 text-sm font-black text-white bg-gradient-to-r from-purple-500 to-rose-500 hover:from-purple-400 hover:to-rose-400 rounded-xl shadow transition">
-                📖 FANZAで読む（18禁）
-              </a>
+              {post.tachiyomi_url ? (
+                <a href={post.tachiyomi_url} target="_blank" rel="noopener noreferrer"
+                  className="inline-block mt-2 px-6 py-3 text-sm font-black text-white bg-gradient-to-r from-purple-500 to-rose-500 hover:from-purple-400 hover:to-rose-400 rounded-xl shadow transition">
+                  📖 無料で試し読みする（FANZA）
+                </a>
+              ) : (
+                <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer"
+                  className="inline-block mt-2 px-6 py-3 text-sm font-black text-white bg-gradient-to-r from-purple-500 to-rose-500 hover:from-purple-400 hover:to-rose-400 rounded-xl shadow transition">
+                  📖 FANZAで読む（18禁）
+                </a>
+              )}
             </div>
           </div>
         </section>
 
-        {/* サンプル画像 */}
-        {post.sample_images && post.sample_images.length > 0 && (
-          <section className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
-            <h2 className="text-sm font-extrabold text-slate-800">📷 サンプルページ（{post.sample_images.length}枚）</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-              {post.sample_images.slice(0, 12).map((img, i) => (
-                <a key={i} href={post.affiliate_url} target="_blank" rel="noopener noreferrer">
-                  <img
-                    src={img}
-                    alt={`${post.title} サンプルページ${i + 1}`}
-                    className="w-full rounded-lg border border-slate-200 hover:opacity-90 transition cursor-pointer"
-                    loading="lazy"
-                  />
-                </a>
-              ))}
-            </div>
-            {post.sample_images.length > 12 && (
-              <p className="text-xs text-slate-400 text-center">
-                残り{post.sample_images.length - 12}枚は
-                <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer" className="text-purple-600 font-bold hover:underline">
-                  FANZAで確認
-                </a>
-              </p>
-            )}
-          </section>
-        )}
+        {/* サンプル画像（APIで提供されないため非表示） */}
 
         {/* レビュー本文 */}
         <section className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm prose prose-slate max-w-none
