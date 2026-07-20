@@ -96,6 +96,8 @@ export default function RootLayout({
               <span className="text-slate-300">/</span>
               <a href="/ranking" className="hover:text-rose-600 transition">ランキング</a>
               <span className="text-slate-300">/</span>
+              <a href="/manga" className="hover:text-purple-600 transition font-black text-purple-600">📚漫画</a>
+              <span className="text-slate-300">/</span>
               <a href="https://haitoku.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 transition text-rose-700 border border-rose-500/30 px-2 py-1 rounded">姉妹サイト: 深夜書斎</a>
               <span className="text-slate-300">/</span>
               <a href="https://er-2.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 transition text-rose-700 border border-rose-500/30 px-2 py-1 rounded">姉妹サイト: バクロファイル</a>
@@ -146,6 +148,8 @@ export default function RootLayout({
             </div>
             <div className="flex flex-wrap gap-4 text-[10px] font-bold text-slate-500 justify-center md:justify-end">
               <a href="/" className="hover:text-slate-950">ホーム</a>
+              <span>•</span>
+              <a href="/manga" className="hover:text-purple-600 text-purple-600 font-bold">📚漫画コーナー</a>
               <span>•</span>
               <a href="/archives" className="hover:text-rose-600 text-slate-600 font-bold">全記事一覧（サイトマップ）</a>
               <span>•</span>
