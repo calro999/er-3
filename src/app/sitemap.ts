@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
     { url: `${baseUrl}/ranking`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
+    { url: `${baseUrl}/manga`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
   ];
 
   if (!fs.existsSync(postsDir)) return routes;
@@ -62,6 +63,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
   } catch (error) {
     console.error('Error generating sitemap:', error);
+  }
+
+  // 漫画ページ
+  const mangaDir = path.join(process.cwd(), 'src', 'data', 'manga');
+  if (fs.existsSync(mangaDir)) {
+    const mangaFiles = fs.readdirSync(mangaDir).filter(f => f.endsWith('.json'));
+    for (const file of mangaFiles) {
+      try {
+        const manga = JSON.parse(fs.readFileSync(path.join(mangaDir, file), 'utf8'));
+        if (!manga?.id) continue;
+        routes.push({
+          url: `${baseUrl}/manga/${manga.id}`,
+          lastModified: manga.date ? new Date(manga.date) : new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.85,
+        });
+      } catch {}
+    }
   }
 
   return routes;
