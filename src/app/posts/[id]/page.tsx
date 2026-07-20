@@ -344,7 +344,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             />
           </section>
 
-          {/* サンプル動画と写真スライド */}
+{/* サンプル動画と写真スライド */}
           {(post.sample_movie_url || (post.sample_images && post.sample_images.length > 0)) && (
             <section className="space-y-6" aria-label="サンプルプレビュー">
               {post.sample_movie_url && (
@@ -392,9 +392,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </section>
           )}
 
-          
-
-          {/* 関連動画・出演女優の作品（CTA形式のボタン） */}
+{/* 関連動画・出演女優の作品（CTA形式のボタン） */}
           <section className="pt-6 border-t border-slate-100 space-y-4" aria-label="関連作品・動画をチェック">
             <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
               ▼ あわせて読みたい関連作品・動画をチェック！

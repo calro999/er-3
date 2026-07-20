@@ -235,12 +235,22 @@ export default function PostListContainer({ initialPosts }: PostListContainerPro
                           </span>
                         ))}
                       </div>
-                      <a
-                        href={`/posts/${post.id}`}
-                        className="w-full text-center text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 py-2.5 rounded-xl shadow transition duration-200 cursor-pointer"
-                      >
-                        考察レビューを読む
-                      </a>
+                      <div className="flex gap-2">
+                        <a
+                          href={`/posts/${post.id}`}
+                          className="flex-1 text-center text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 py-2.5 rounded-xl transition cursor-pointer"
+                        >
+                          レビューを読む
+                        </a>
+                        <a
+                          href={post.affiliate_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 text-center text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-400 hover:to-pink-500 py-2.5 rounded-xl shadow transition duration-200 cursor-pointer"
+                        >
+                          作品を視聴する
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </article>
