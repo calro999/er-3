@@ -54,6 +54,7 @@ export default function RootLayout({
   return (
     <html lang="ja" className="h-full">
       <head>
+        <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/feed.xml" />
         <meta name="referrer" content="no-referrer" />
         <link rel="preconnect" href="https://p.dmm.co.jp" />
         <link rel="preconnect" href="https://pics.dmm.co.jp" />
