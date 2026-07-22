@@ -17,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const postsDir = path.join(process.cwd(), 'src', 'data', 'posts');
   const actressSet = new Set<string>();
   const genreSet = new Set<string>();
+  const makerSet = new Set<string>();
 
   if (fs.existsSync(postsDir)) {
     try {
@@ -41,6 +42,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
           (post.actresses || []).forEach((a: string) => { if (a) actressSet.add(a); });
           (post.genres || []).forEach((g: string) => { if (g) genreSet.add(g); });
+          if (post.maker) makerSet.add(post.maker);
         } catch {}
       }
     } catch (e) {
@@ -62,6 +64,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
   genreSet.forEach((genre) => {
     routes.push({
       url: `${baseUrl}/genre/${encodeURIComponent(genre)}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    });
+  });
+
+  // メーカーページ
+  makerSet.forEach((maker) => {
+    routes.push({
+      url: `${baseUrl}/maker/${encodeURIComponent(maker)}`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.85,
