@@ -55,6 +55,12 @@ export default function RootLayout({
     <html lang="ja" className="h-full">
       <head>
         <meta name="referrer" content="no-referrer" />
+        <link rel="preconnect" href="https://p.dmm.co.jp" />
+        <link rel="preconnect" href="https://pics.dmm.co.jp" />
+        <link rel="preconnect" href="https://cc3001.dmm.co.jp" />
+        <link rel="dns-prefetch" href="https://p.dmm.co.jp" />
+        <link rel="dns-prefetch" href="https://pics.dmm.co.jp" />
+        <link rel="dns-prefetch" href="https://cc3001.dmm.co.jp" />
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-XMJN1W1EBN"
