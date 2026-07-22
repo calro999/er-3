@@ -7,7 +7,7 @@ export const dynamic = 'force-static';
 export async function GET() {
   const baseUrl = 'https://er-3.pages.dev';
   const postsDir = path.join(process.cwd(), 'src', 'data', 'posts');
-  let items = [];
+  let items = '';
 
   if (fs.existsSync(postsDir)) {
     try {
