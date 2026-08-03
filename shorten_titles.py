@@ -24,28 +24,35 @@ def shorten_title_with_llm(original_title):
     
     system_message = "あなたは優秀なSEOライターです。長すぎるタイトルを短く魅力的に要約します。"
     
-    for attempt in range(2):
+    github_token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if github_token:
         try:
-            print(f"  -> Requesting AI to shorten title...")
-            response = requests.post(
-                "https://text.pollinations.ai/",
+            res = requests.post(
+                "https://models.inference.ai.azure.com/chat/completions",
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {github_token}"
+                },
                 json={
                     "messages": [
                         {"role": "system", "content": system_message},
                         {"role": "user", "content": prompt}
                     ],
-                    "model": "openai-fast" # 速度重視
+                    "model": "gpt-4o-mini"
                 },
-                timeout=20
+                timeout=15
             )
-            if response.status_code == 200:
-                short_title = response.text.strip().replace('"', '').replace("「", "").replace("」", "").replace("【", "").replace("】", "")
-                # ある程度短くなっていれば採用
-                if len(short_title) > 0 and len(short_title) < 65:
+            if res.status_code == 200:
+                short_title = res.json()["choices"][0]["message"]["content"].strip().replace('"', '').replace("「", "").replace("」", "").replace("【", "").replace("】", "")
+                if 0 < len(short_title) < 65:
                     return short_title
-        except Exception as e:
-            print(f"  -> AI request failed: {e}")
-        time.sleep(1)
+        except Exception:
+            pass
+
+    clean_t = re.sub(r'【.*?】|\[.*?\]|（.*?）|\(.*?\)', '', original_title).strip()
+    if len(clean_t) > 50:
+        clean_t = clean_t[:50].rsplit(' ', 1)[0]
+    return clean_t if clean_t else original_title[:50]
         
     # AI失敗時は単純な切り詰め（女優名を末尾に残すなどの簡易処理）
     return (original_title[:45] + "...").replace("......", "...")

@@ -114,31 +114,7 @@ def generate_manga_article(item):
 5. ネタバレは最小限にし「続きはFANZAで確認」へ誘導
 6. HTMLのみ出力。マークダウン禁止。"""
 
-    system_message = "あなたはアダルト漫画に精通したカリスマレビュアーです。美少女・美女系漫画に詳しく、可愛さ・エロさを文学的に表現し、品番検索で辿り着く読者向けのSEO最強記事をHTMLで書きます。"
-    models = ["openai", "openai-fast", "mistral"]
 
-    for attempt in range(2):
-        for model in models:
-            try:
-                print(f"  Generating with {model}...")
-                r = requests.post(
-                    "https://text.pollinations.ai/",
-                    json={"messages": [
-                        {"role": "system", "content": system_message},
-                        {"role": "user", "content": prompt}
-                    ], "model": model},
-                    timeout=45
-                )
-                if r.status_code == 200 and len(r.text.strip()) > 300:
-                    result = r.text.strip()
-                    if "```html" in result:
-                        result = result.split("```html", 1)[1]
-                    if "```" in result:
-                        result = result.split("```")[0]
-                    return result.strip()
-            except Exception as e:
-                print(f"  Error with {model}: {e}")
-            time.sleep(1)
 
     return f"<h2>{title}</h2><p>{comment}</p>"
 
