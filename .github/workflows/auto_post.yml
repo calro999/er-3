@@ -33,6 +33,7 @@ jobs:
 
       - name: Run Crawler
         env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           FANZA_API_ID: ${{ secrets.FANZA_API_ID }}
           FANZA_AFFILIATE_ID: ${{ secrets.FANZA_AFFILIATE_ID }}
         run: python fanza_crawler.py

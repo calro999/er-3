@@ -1,3 +1,29 @@
+
+def call_groq_api(prompt, system_content="You are a helpful assistant.", model="llama-3.3-70b-versatile"):
+    groq_key = os.environ.get("GROQ_API_KEY")
+    if not groq_key:
+        return None
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {groq_key}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": system_content},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.7
+    }
+    try:
+        res = requests.post(url, headers=headers, json=payload, timeout=30)
+        if res.status_code == 200:
+            return res.json()["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        print(f"Groq API error: {e}")
+    return None
+
 import os
 import random
 import re
