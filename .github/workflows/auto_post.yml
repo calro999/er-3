@@ -2,7 +2,7 @@ name: Fetch FANZA and Build Next.js Site
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '0 */2 * * *'
   workflow_dispatch:
 
 permissions:
@@ -40,7 +40,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           FANZA_API_ID: ${{ secrets.FANZA_API_ID }}
           FANZA_AFFILIATE_ID: ${{ secrets.FANZA_AFFILIATE_ID }}
-        run: python fanza_crawler.py
+        run: python generate_killer_posts.py
 
       - name: Bundle Posts
         run: node bundle_posts.js

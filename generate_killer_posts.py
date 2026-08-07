@@ -26,7 +26,7 @@ POSTS_DIR = "src/data/posts"
 API_ID = "4Lx0ftRf17Uuad6Ud7Gb"
 API_AFFILIATE_ID = "onchan555-999"
 LINK_AFFILIATE_ID = "onchan555-008"
-TARGET_POST_COUNT = 10
+TARGET_POST_COUNT = 2
 
 def load_posted_cache():
     if os.path.exists(CACHE_FILE):
