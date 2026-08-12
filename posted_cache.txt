@@ -599,3 +599,5 @@ crnx00238
 mida00737
 crnx00355
 pxvr00468
+kdmi00009ai
+dass00565
