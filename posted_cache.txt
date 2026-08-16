@@ -691,3 +691,5 @@ ymdd00498
 dv00788ai
 snos00233
 sone00781
+mntl00001
+mida00512
