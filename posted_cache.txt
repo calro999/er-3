@@ -937,3 +937,5 @@ prtd00035
 dass00577
 ssis00965
 tikb00212
+huntc00422
+mopt00049
