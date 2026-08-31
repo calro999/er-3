@@ -971,3 +971,5 @@ h_188nfdm00306
 savr01058
 dsuvr00005
 gkok00004
+madv00642
+focs00266
