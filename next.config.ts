@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
+  // Cloudflare Pagesの20,000ファイル上限対策
+  cleanDistDir: true,
 };
 
 export default nextConfig;

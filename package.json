@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "node bundle_posts.js && node generate_sitemap.js && next build",
+    "build": "node bundle_posts.js && node bundle_manga.js && node generate_sitemap.js && node generate_llms_txt.js && next build && find out -name '*__next*' -delete && find out -name '*.txt' ! -name 'llms*.txt' ! -name 'robots.txt' ! -name '*indexnow*' -delete",
     "dev": "next dev",
     "start": "next start",
     "lint": "eslint",
