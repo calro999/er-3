@@ -1775,3 +1775,5 @@ rin00003ai
 mizd00450
 svs00089
 atvr00072
+snos00399
+huntc00638
