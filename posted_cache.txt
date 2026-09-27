@@ -1879,3 +1879,5 @@ hmn00738
 rprj00002
 hsoda00036
 huntc00064
+snos00315
+hdrt00010
